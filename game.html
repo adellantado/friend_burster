@@ -34,10 +34,15 @@ var friends = [{photo: "x_87b606ea.jpg", id: 0},
 			   
 var playButton;
 var volumeButton;
+var menu;
 
 var internalId;
 var musicInstance;
 var soundInstance;
+
+var isPlayerMuted;
+
+var nextFriend;
 
 function init() {
 	canvas = document.getElementById('canvas');
@@ -55,17 +60,21 @@ function init() {
  	// init background
 
  	var background = new createjs.Bitmap(SKY);
- 	background.scaleX = background.scaleY = getScaleFill(background.image, canvas.width, canvas.height);
+ 	background.image.onload = function () {
+ 		background.scaleX = background.scaleY = getScaleFill(background.image, canvas.width, canvas.height);
+ 		stage.update();
+ 	}
  	stage.addChild(background);
 
 	spriteSheet = new createjs.SpriteSheet({
 		images: ["balloon_pop1.png"], 
 		frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
-		//frames: [[0,0,373,390,0,82.55,58.9],[373,0,373,390,0,82.55,58.9],[746,0,373,390,0,82.55,58.9],[1119,0,373,390,0,82.55,58.9],[1492,0,373,390,0,82.55,58.9],[0,390,373,390,0,82.55,58.9],[373,390,373,390,0,82.55,58.9],[746,390,373,390,0,82.55,58.9],[1119,390,373,390,0,82.55,58.9],[1492,390,373,390,0,82.55,58.9],[0,780,373,390,0,82.55,58.9],[373,780,373,390,0,82.55,58.9],[746,780,373,390,0,82.55,58.9],[1119,780,373,390,0,82.55,58.9],[1492,780,373,390,0,82.55,58.9],[0,1170,373,390,0,82.55,58.9],[373,1170,373,390,0,82.55,58.9],[746,1170,373,390,0,82.55,58.9],[1119,1170,373,390,0,82.55,58.9],[1492,1170,373,390,0,82.55,58.9]]
 	});
 
 	createMenu();
 	initButtons();
+
+	preloadImage(friends[Math.round(Math.random()*(friends.length-1))]);
 }
 
 
@@ -99,10 +108,10 @@ function getBalloon(friend) {
 	image.scaleX = image.scaleY = getScaleFill(balloon.photo.image, 100, 100);
 
 	var bitmap = new createjs.Bitmap(friend.photo);
-		bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);
-		bitmap.rotation = 20;
-		bitmap.y = balloon.photo.scaleY*balloon.photo.image.height - 5;
-		bitmap.x = balloon.photo.scaleX*balloon.photo.image.width / 2 + 5;
+		bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);	
+			bitmap.rotation = 20;
+			bitmap.y = balloon.photo.scaleY*balloon.photo.image.height - 5;
+			bitmap.x = balloon.photo.scaleX*balloon.photo.image.width / 2 + 5;
 		balloon.addChild(bitmap);
 
 	balloon.addEventListener("click", onBalloonCick)
@@ -195,11 +204,21 @@ function getScaleFill(image, destWidth, destHeight) {
 	return scale;
 } 
 
+function preloadImage(friend) {
+	var bitmap = new createjs.Bitmap(friend.photo);
+	bitmap.visible = false;
+	stage.addChild(bitmap);
+	//image.src = friend.photo;
+	nextFriend = friend;
+}
+
 function startBalloon() {
 	var index = Math.round(Math.random()*(friends.length-1));
-	var balloon = getBalloon(friends[index]);
+	var balloon = getBalloon(nextFriend);
+	preloadImage(friends[index]);
 	balloon.x = getBalloonPosition(balloon);
 	balloon.y = canvas.height - 100;
+	stage.update();
 	stage.addChild(balloon);
 	runBalloon(balloon);
 	runCloud();
@@ -208,7 +227,7 @@ function startBalloon() {
 function startGame() {
 	if (createjs.Ticker.getPaused()) {
 		createjs.Ticker.setPaused(false);
-		createjs.Sound.setMute(isPlayerMuted);
+		muteSounds(isPlayerMuted);
 	}
 	if (!internalId) {
 		internalId = setInterval(startBalloon, 500);
@@ -221,36 +240,40 @@ function startGame() {
 
 function stopGame() {
 	clearInterval(internalId);
+	internalId = null;
 	createjs.Ticker.setPaused(true);
 	createjs.Sound.stop();
 	internalId = null;
 	musicInstance = null;
-	isPlayerMuted = false;
 }
 
 function pauseGame() {
 	clearInterval(internalId);
+	internalId = null;
+	muteSounds(true);
 	createjs.Ticker.setPaused(true);
-	createjs.Sound.setMute(true);
 }
 
-function muteSounds() {
-	isPlayerMuted = !createjs.Sound.getMute();
-	createjs.Sound.setMute(isPlayerMuted);
+function muteSounds(value) {
+	if (!createjs.Ticker.getPaused()) {
+		createjs.Sound.setMute(value);
+	}	
 }
 
 
 function createMenu() {
-	var menu = new createjs.Container();
-	var menuWidth = 350;
+	menu = new createjs.Container();
+	var menuWidth = 420;
 	var menuHeight = 100;
 	var graphics = new createjs.Graphics().beginFill(createjs.Graphics.getRGB(255,255,255)).dr(0,0,menuWidth,menuHeight);
 	menu.addChild(new createjs.Shape(graphics));
 	var logo = new createjs.Bitmap('http://www.w3.org/html/logo/badge/html5-badge-h-solo.png');
-	menu.addChild(logo);
-	logo.y = (menuHeight - logo.image.height)/2;
-	logo.x = 20;
-	var text = new createjs.Text("Contact me", "20px Arial");
+	logo.image.onload = function() {
+		logo.y = (menuHeight - logo.image.height)/2;
+		logo.x = 20;
+		menu.addChild(logo);
+	}
+	var text = new createjs.Text("Hire me or anyone from my team", "20px Arial");
 	text.x = 100;
 	text.y = 20;
 	menu.addChild(text);
@@ -260,24 +283,11 @@ function createMenu() {
 	menu.addChild(contacts);
 
 	menu.alpha = 0.8;
-	menu.x = canvas.width;
-	menu.y = canvas.height;
 
-	var arrow = new createjs.Shape(new createjs.Graphics().beginFill(createjs.Graphics.getRGB(255,255,255)).dc(0,0,15));
-	menu.addChild(arrow);
-	arrow.isClose = function() {return menu.x > (canvas.width - menuWidth)};
-	arrow.addEventListener("click", function(event) {
-		if (event.target.isClose()) {
-			createjs.Tween.get(menu).to({x: canvas.width - menuWidth, y: canvas.height - menuHeight}, 300, createjs.Ease.elasticOut());
-		} else {
-			createjs.Tween.get(menu).to({x: canvas.width, y: canvas.height}, 300, createjs.Ease.elasticOut());
-		}
-	});
-
-	var point = new createjs.Shape(new createjs.Graphics().beginFill(createjs.Graphics.getRGB(255,0,0)).dc(-5,-5,5));
-	menu.addChild(point);
-
+	menu.x = (canvas.width - menuWidth) / 2;
+	menu.y = (canvas.height - menuHeight) / 2;
 	stage.addChild(menu);
+
 	stage.update();
 }
 
@@ -287,7 +297,6 @@ function initButtons() {
 	var muteBtn = new createjs.Bitmap(muteIcon);
 	var volumeBtn = new createjs.Bitmap(volumeIcon);
 	
-
 	playButton = new createjs.Container();
 	playButton.setPause = function (pause) {
 		if (pause) {
@@ -295,6 +304,7 @@ function initButtons() {
 			this.addChild(pauseBtn);
 			this.onClick = function () {
 				this.setPause(false);
+				stage.addChild(menu);
 				pauseGame();
 			};
 		} else {
@@ -302,6 +312,7 @@ function initButtons() {
 			this.addChild(playBtn);
 			this.onClick = function() {
 				this.setPause(true);
+				stage.removeChild(menu);
 				startGame();
 			};
 		}
@@ -314,18 +325,25 @@ function initButtons() {
 			this.addChild(muteBtn);
 			this.onClick = function () {
 				this.setMute(false);
-				muteSounds();
+				isPlayerMuted = false;
+				muteSounds(isPlayerMuted);
 			};
 		} else {
 			this.removeAllChildren();
 			this.addChild(volumeBtn);
 			this.onClick = function () {
 				this.setMute(true);
-				muteSounds();
+				isPlayerMuted = true;
+				muteSounds(isPlayerMuted);
 			};
 		}
 	}
 	volumeButton.setMute(false);
+	//volumeButton.addChild(volumeBtn);
+
+
+	playButton.y = volumeButton.y = 10;
+
 	playButton.onMouseOver = handCursorHandler;
 	volumeButton.onMouseOver = handCursorHandler;
 	playButton.onMouseOut = defaultCursorHandler;
@@ -351,18 +369,6 @@ function handCursorHandler() {
 <div class="canvasHolder">
 	<canvas id="canvas" width="600" height="530"></canvas>
 </div>
-<button type="button" onClick="startGame()">
-play
-</button>
-<button type="button" onClick="pauseGame()">
-pause
-</button>
-<button type="button" onClick="stopGame()"/>
-stop
-</button>
-<button type="button" onClick="muteSounds()"/>
-mute
-</button>
 
 </body>
 </html>
