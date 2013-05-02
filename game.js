@@ -1,14 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<script src="http://code.createjs.com/easeljs-0.6.0.min.js"></script>
-	<script src="http://code.createjs.com/tweenjs-0.4.0.min.js"></script>
-	<script src="http://code.createjs.com/soundjs-0.4.0.min.js"></script>
-</head>
-<body onload="init();">
-
-<script type="text/javascript">
-
 var canvas;
 var stage;
 
@@ -28,9 +17,7 @@ var spriteSheet;
 
 var burstedFriends = {};
 
-var friends = [{photo: "x_87b606ea.jpg", id: 0}, 
-			   {photo: "x_87b606ea.jpg", id: 1}, 
-			   {photo: "x_87b606ea.jpg", id: 2}]; // medium and big photos, nickname, first-last names, id
+var friends; // medium and big photos, nickname, first-last names, id
 			   
 var playButton;
 var volumeButton;
@@ -73,8 +60,6 @@ function init() {
 
 	createMenu();
 	initButtons();
-
-	preloadImage(friends[Math.round(Math.random()*(friends.length-1))]);
 }
 
 
@@ -224,16 +209,18 @@ function startBalloon() {
 }
 
 function startGame() {
-	if (createjs.Ticker.getPaused()) {
+	if (friends) {
+		if (createjs.Ticker.getPaused()) {
 		createjs.Ticker.setPaused(false);
 		muteSounds(isPlayerMuted);
-	}
-	if (!internalId) {
-		internalId = setInterval(startBalloon, 500);
-	}
-	if (!musicInstance) {
-		musicInstance = createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE);
-    	musicInstance.setVolume(0.2);
+		}
+		if (!internalId) {
+			internalId = setInterval(startBalloon, 500);
+		}
+		if (!musicInstance) {
+			musicInstance = createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE);
+	    	musicInstance.setVolume(0.2);
+		}
 	}
 }
 
@@ -310,9 +297,11 @@ function initButtons() {
 			this.removeAllChildren();
 			this.addChild(playBtn);
 			this.onClick = function() {
-				this.setPause(true);
-				stage.removeChild(menu);
-				startGame();
+				if (friends) {
+					this.setPause(true);
+					stage.removeChild(menu);
+					startGame();
+				}
 			};
 		}
 	}
@@ -362,12 +351,3 @@ function defaultCursorHandler() {
 function handCursorHandler() {
 	document.body.style.cursor = 'pointer';
 }
-
-</script>
-
-<div class="canvasHolder">
-	<canvas id="canvas" width="600" height="530"></canvas>
-</div>
-
-</body>
-</html>
