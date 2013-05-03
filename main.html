@@ -66,23 +66,31 @@
 			VK.Api.call("friends.get" ,{fields: "uid, first_name, last_name, photo"},function(res) {
 				friends = res.response;
 				url = "http://lamour.in.ua/html5/download.php?download=";
-				var friend;
-				var xhr;
 				for (var i = 0; i < friends.length; i++) {
-					friend = friends[i];
-					//xhr = $.get('download.php', {download: friend.photo}, callBack);
-					xhr = $.ajax({type: 'GET',
+					xhrs[friends[i].uid] = friends[i];
+				}
+				loadNext(friends[0]);
+				//preloadImage(friends[Math.round(Math.random()*(friends.length-1))]);
+			});
+		}
+
+		var i = 0;
+		function loadNext(friend) {
+			var xhr = $.ajax({type: 'GET',
             						url: 'download.php',               
 						            data: {download: friend.photo},
 						            async: true,
 						            success: function(res,status,xhr){
+						            	i++;
 						            	xhrs[xhr.id].photo = res;
+						            	if (i == friends.length) {
+						            		preloadImage(friends[Math.round(Math.random()*(friends.length-1))]);
+						            	} else {
+						            		loadNext(friends[i]);
+						            	}
 						            }});
-					xhr.id = friend.uid;
-					xhrs[xhr.id] = friend;
-				}
-				//preloadImage(friends[Math.round(Math.random()*(friends.length-1))]);
-			});
+			xhr.id = friend.uid;
+
 		}
 
 		function callBack(res,status,xhr) {
