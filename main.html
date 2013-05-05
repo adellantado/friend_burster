@@ -10,7 +10,6 @@
 	<style type="text/css">
 
 		div {
-			/*overflow: auto;*/
 			position:absolute;
 			top: 0;
 			left: 0;
@@ -23,18 +22,12 @@
 			background-image: url("background.png");
 		}
 
-		/*.canvasHolder {
-     		margin: 0px auto;
-     		border: 1px solid red;
-   		}*/
-
    		#w3org {
    			position: absolute;
    			left: 20px;
    			bottom: 20px;
    		}
    		
-
 		#canvas
 		{
 		    display: block;
@@ -48,8 +41,6 @@
 
 <div id="vk_api_transport"></div>
 <script type="text/javascript">
-
-		var xhrs = {};
 
 		setTimeout(function () {
 			var el = document.createElement('script');
@@ -102,38 +93,23 @@
 		function getFriends() {
 
 			VK.Api.call("friends.get" ,{fields: "uid, first_name, last_name, photo"},function(res) {
-				friends = res.response;
-				url = "http://lamour.in.ua/html5/download.php?download=";
-				for (var i = 0; i < friends.length; i++) {
-					xhrs[friends[i].uid] = friends[i];
+				//friends = res.response;
+				friends = [];
+				// worker
+				var loadWorker = new Worker("load_photos_worker.js");
+				loadWorker.onerror = function (event) {
+					console.log("Worker error: "+event.message);
 				}
-				//loadNext(friends[0]);
-				preloadImage(friends[Math.round(Math.random()*(friends.length-1))]);
+ 				loadWorker.onmessage = function (event) {
+ 					var friend = event.data.friend;
+ 					if (friend) {
+ 						friends[friends.length] = friend;
+ 						console.log("Friend loaded: "+friend.uid);
+						preloadImage(friend);
+ 					}
+				}
+				loadWorker.postMessage({friends: res.response});
 			});
-		}
-
-		var i = 0;
-		function loadNext(friend) {
-			var xhr = $.ajax({type: 'GET',
-								url: 'download.php',               
-						        data: {download: friend.photo},
-						        async: true,
-						        success: function(res,status,xhr){
-						           	i++;
-						            xhrs[xhr.id].proxy_photo = res;
-						            nextFriend = xhrs[xhr.id];
-						            /*if (i == friends.length) {
-						            	preloadImage(friends[Math.round(Math.random()*(friends.length-1))]);
-						            } else {
-						            	loadNext(friends[i]);
-						            }*/
-						        }});
-			xhr.id = friend.uid;
-
-		}
-
-		function callBack(res,status,xhr) {
-			xhrs[xhr.id].photo = res;
 		}
 
 		/*friends = [{photo: "x_87b606ea.jpg", id: 0}, 
@@ -142,20 +118,13 @@
 
 </script>
 
-<!--<img id="bimg" src="background.png"/>-->
-
-
-
 <div class="canvasHolder">
 	<a href="http://www.w3.org/html/logo/" target="_blank">
-	<img id="w3org" src="http://www.w3.org/html/logo/badge/html5-badge-h-css3-graphics-performance.png" width="197" height="64" alt="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, and Performance &amp; Integration" title="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, and Performance &amp; Integration">
+		<img id="w3org" src="http://www.w3.org/html/logo/badge/html5-badge-h-css3-graphics-performance.png" width="197" height="64" alt="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, and Performance &amp; Integration" title="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, and Performance &amp; Integration">
 	</a>
 	<canvas id="canvas" width="600" height="530"></canvas>
 	
 </div>
-
-
-
 
 </body>
 </html>
