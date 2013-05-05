@@ -92,7 +92,7 @@ function getBalloon(friend) {
 	balloon.friend = friend;
 	image.scaleX = image.scaleY = getScaleFill(balloon.photo.image, 100, 100);
 
-	var bitmap = new createjs.Bitmap(friend.photo);
+	var bitmap = new createjs.Bitmap(friend.proxy_photo);
 		bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);	
 			bitmap.rotation = 20;
 			bitmap.y = balloon.photo.scaleY*balloon.photo.image.height - 5;
@@ -146,12 +146,12 @@ function onBalloonCick(event) {
 	anim.addEventListener("animationend", function(){removeBallon(balloon);})
 	anim.gotoAndPlay(0);
 
-	if(!burstedFriends[balloon.friend.id]) {
-		burstedFriends[balloon.friend.id] = 0;
+	if(!burstedFriends[balloon.friend.uid]) {
+		burstedFriends[balloon.friend.uid] = 0;
 	}
-	burstedFriends[balloon.friend.id] += 1;
+	burstedFriends[balloon.friend.uid] += 1;
 	
-	console.log("count="+burstedFriends[balloon.friend.id]+", id="+balloon.friend.id);
+	console.log("count="+burstedFriends[balloon.friend.uid]+", id="+balloon.friend.uid);
 
 	
 	//removeBallon(balloon);
@@ -190,21 +190,28 @@ function getScaleFill(image, destWidth, destHeight) {
 } 
 
 function preloadImage(friend) {
-	var bitmap = new createjs.Bitmap(friend.photo);
-	bitmap.visible = false;
-	stage.addChild(bitmap);
-	nextFriend = friend;
+	if (loadNext) {
+		loadNext(friend);
+	}
 }
 
 function startBalloon() {
-	var index = Math.round(Math.random()*(friends.length-1));
-	var balloon = getBalloon(nextFriend);
-	preloadImage(friends[index]);
-	balloon.x = getBalloonPosition(balloon);
-	balloon.y = canvas.height - 100;
-	stage.update();
-	stage.addChild(balloon);
-	runBalloon(balloon);
+	if (nextFriend) {
+		var index = Math.round(Math.random()*(friends.length-1));
+		var balloon = getBalloon(nextFriend);
+		var friend = friends[index];
+		if (friend.proxy_photo) {
+			nexFriend = friend;
+		} else {
+			preloadImage(friend);
+			nextFriend = null;
+		}
+		balloon.x = getBalloonPosition(balloon);
+		balloon.y = canvas.height - 100;
+		stage.update();
+		stage.addChild(balloon);
+		runBalloon(balloon);
+	}
 	runCloud();
 }
 
@@ -215,7 +222,7 @@ function startGame() {
 		muteSounds(isPlayerMuted);
 		}
 		if (!internalId) {
-			internalId = setInterval(startBalloon, 500);
+			internalId = setInterval(startBalloon, 800);
 		}
 		if (!musicInstance) {
 			musicInstance = createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE);
