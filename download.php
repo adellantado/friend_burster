@@ -26,7 +26,7 @@ function deleteFile($path) {
 	if ($handle = opendir($path)) {
 		while (false !== ($file = readdir($handle))) {
 			if (!is_dir($file)) {
-				if (filemtime($path.$file) < time() - 180) {
+				if (filemtime($path.$file) < time() - 1800) {
 					unlink($path.$file);
 					//break;
 				}
