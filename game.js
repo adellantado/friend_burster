@@ -31,6 +31,8 @@ var isPlayerMuted;
 
 var nextFriend;
 
+var balloonImage;
+
 function init() {
 	canvas = document.getElementById('canvas');
 	stage = new createjs.Stage(canvas);
@@ -58,6 +60,10 @@ function init() {
 		frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
 	});
 
+	// preload balloon
+	balloonImage = new Image();
+	balloonImage.src = BALLOON_URL;
+
 	createMenu();
 	initButtons();
 }
@@ -77,12 +83,11 @@ function getBalloon(friend) {
 	var balloon = new createjs.Container();
 	
 	//var image = new createjs.Bitmap(friend.photo);
-	var image = new createjs.Bitmap(BALLOON_URL);
+	var balloonImage = new createjs.Bitmap(BALLOON_URL);
 	
-	
-	balloon.addChild(image);
+	balloon.addChild(balloonImage);
 
-	createjs.Container.prototype.photo = image;
+	createjs.Container.prototype.photo = balloonImage;
 	createjs.Container.prototype.width = function () {
 		return this.photo.image.width * this.scaleX;
 	}
@@ -90,7 +95,7 @@ function getBalloon(friend) {
 		return this.photo.image.height * this.scaleY;
 	}
 	balloon.friend = friend;
-	image.scaleX = image.scaleY = getScaleFill(balloon.photo.image, 100, 100);
+	balloonImage.scaleX = balloonImage.scaleY = getScaleFill(balloon.photo.image, 100, 100);
 
 	var bitmap = new createjs.Bitmap(friend.photo);
 		bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);	
@@ -190,9 +195,8 @@ function getScaleFill(image, destWidth, destHeight) {
 } 
 
 function preloadImage(friend) {
-	var bitmap = new createjs.Bitmap(friend.photo);
-	//bitmap.visible = false;
-	//stage.addChild(bitmap);
+	var image = new Image();
+	image.src = friend.photo;
 	nextFriend = friend;
 }
 

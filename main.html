@@ -6,10 +6,11 @@
 	<script src="http://code.createjs.com/soundjs-0.4.0.min.js"></script>
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 	<script src="game.js"></script>
+	<script type="text/javascript" src="http://vkontakte.ru/js/api/share.js?9" charset="windows-1251"></script>
 
 	<style type="text/css">
 
-		div {
+		#main {
 			position:absolute;
 			top: 0;
 			left: 0;
@@ -37,7 +38,7 @@
 	</style>
 
 </head>
-<body onload="init();">
+<body onload="start();">
 
 <div id="vk_api_transport"></div>
 <script type="text/javascript">
@@ -57,6 +58,21 @@
 			});
 			getStatus();
 		};
+
+		function start() {
+			var shareButton = VK.Share.button({
+				title: 'Friend Burster',
+				description: 'awesome. check this out!',
+				image: 'http://lamour.in.ua/html5/preview.png',
+				noparse: true
+			}, {type: 'custom', 
+				text: '<img src="http://vk.com/images/vk16.png"/>'
+			});
+			var div = document.getElementById('vk_share_button');
+			div.innerHTML = shareButton;
+			
+			init();
+		}
 
 		function getStatus() {
 			VK.Auth.getLoginStatus(function (response) {
@@ -117,13 +133,12 @@
 			   {photo: "x_87b606ea.jpg", id: 2}];*/
 
 </script>
-
-<div class="canvasHolder">
+<div id="main" class="canvasHolder">
+	<div id="vk_share_button" height="50"></div>
 	<a href="http://www.w3.org/html/logo/" target="_blank">
 		<img id="w3org" src="http://www.w3.org/html/logo/badge/html5-badge-h-css3-graphics-performance.png" width="197" height="64" alt="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, and Performance &amp; Integration" title="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, and Performance &amp; Integration">
 	</a>
 	<canvas id="canvas" width="600" height="530"></canvas>
-	
 </div>
 
 </body>
