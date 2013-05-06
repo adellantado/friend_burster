@@ -17,28 +17,27 @@ function init() {
 	loadNext(items[0]);
 }
 
-		function loadNext(friend) {
-			var xhr = new XMLHttpRequest();
-			xhr.open('GET', url+friend.photo, true);
-			xhr.onreadystatechange = function() {
-			    if (xhr.readyState == 4) {
-			    	if(xhr.status == 200) {
-			       		var res = xhr.responseText;
-			       					photoNum++;
-						           	var friend = xhrs[xhr.id];
-						            friend.photo = res;
-						            postMessage({friend: friend});
-						            if (photoNum == items.length) {
-						            	destroy();
-						            } else {
-						            	loadNext(items[photoNum]);
-						            }
-			     	}
-			  	}
-			};
-			xhr.id = friend.uid;
-			xhr.send(null);
+function loadNext(friend) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', url+friend.photo, true);
+	xhr.onreadystatechange = function() {
+	if (xhr.readyState == 4) {
+		if(xhr.status == 200) {
+			var res = xhr.responseText;
+			photoNum++;
+           	var friend = xhrs[xhr.id];
+				friend.photo = res;
+				postMessage({friend: friend});
+				if (photoNum == items.length) {
+					destroy();
+				} else {
+					loadNext(items[photoNum]);
+				}
 		}
+	}};
+	xhr.id = friend.uid;
+	xhr.send(null);
+}
 
 function destroy() {
 	self.close();
