@@ -1,7 +1,14 @@
-Friend Burster
+FRIEND BURSTER
+==========================================================================================================================
+Burst ballons with friends photos on board as many as possible.. and have fun! 
 
-simple html5 canvas game
+Check it out here: [adellantado.com][dl] 
+[dl]:http://adellantado.com/games/friend_burster/main.html
 
-Game builded with CreateJS library.
-Load friends images with Web Worker.
-VK integration
+NOTE: you should be [VK][dl] user to use it)
+[dl]:vk.com
+
+About
+--------------
+That is simple html5 canvas game, designed with [CreateJS][dl] library 
+[dl]: http://www.createjs.com/
