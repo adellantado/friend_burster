@@ -1,17 +1,19 @@
 var canvas;
 var stage;
 
-var manifest = [{src: "assets/BalloonPopping.ogg", id: "sound"},{src: "assets/8_BIT_dubstep.ogg", id: "music"}];
+var assets_path = "assets/";
+
+var manifest = [{src: assets_path+"BalloonPopping.ogg", id: "sound"},{src: assets_path+"8_BIT_dubstep.ogg", id: "music"}];
 
 var cloudIntensity = 0.15
-var BALLOON_URL = 'assets/balloon.png';
-var CLOUD = 'assets/cloud1.png';
-var SKY = 'assets/esky.jpg';
+var BALLOON_URL = assets_path+'balloon.png';
+var CLOUD = assets_path+'cloud1.png';
+var SKY = assets_path+'esky.jpg';
 
-var playIcon = "assets/play_icon.png";
-var pauseIcon = "assets/pause_icon.png";
-var muteIcon = "assets/mute_icon.png";
-var volumeIcon = "assets/volume_icon.png";
+var playIcon = assets_path+"play_icon.png";
+var pauseIcon = assets_path+"pause_icon.png";
+var muteIcon = assets_path+"mute_icon.png";
+var volumeIcon = assets_path+"volume_icon.png";
 
 var spriteSheet;
 
@@ -56,7 +58,7 @@ function init() {
  	stage.addChild(background);
 
 	spriteSheet = new createjs.SpriteSheet({
-		images: ["assets/balloon_pop1.png"], 
+		images: [assets_path+"balloon_pop1.png"],
 		frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
 	});
 
@@ -104,7 +106,7 @@ function getBalloon(friend) {
 			bitmap.x = balloon.photo.scaleX*balloon.photo.image.width / 2 + 5;
 		balloon.addChild(bitmap);
 
-	balloon.addEventListener("click", onBalloonCick)
+	balloon.addEventListener("click", onBalloonCick);
 	return balloon;
 }
 
@@ -148,7 +150,7 @@ function onBalloonCick(event) {
 	var anim = new createjs.BitmapAnimation(spriteSheet);
 	anim.scaleX = anim.scaleY = balloon.photo.scaleX;
 	balloon.addChild(anim);
-	anim.addEventListener("animationend", function(){removeBallon(balloon);})
+	anim.addEventListener("animationend", function(){removeBallon(balloon);});
 	anim.gotoAndPlay(0);
 
 	if(!burstedFriends[balloon.friend.id]) {

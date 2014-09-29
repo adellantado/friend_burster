@@ -1,4 +1,5 @@
-var url = "http://beedevs.com/friend_burster/download.php?download=";
+var base_url = "http://beedevs.com/friend_burster/";
+var download_url = "download.php?download=";
 var items;
 var xhrs = {};
 var photoNum = 0;
@@ -19,14 +20,14 @@ function init() {
 
 function loadNext(friend) {
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', url+friend.photo, true);
+	xhr.open('GET', base_url+download_url+friend.photo, true);
 	xhr.onreadystatechange = function() {
 	if (xhr.readyState == 4) {
 		if(xhr.status == 200) {
 			var res = xhr.responseText;
 			photoNum++;
            	var friend = xhrs[xhr.id];
-				friend.photo = res;
+				friend.photo = base_url+res;
 				postMessage({friend: friend});
 				if (photoNum == items.length) {
 					destroy();
