@@ -15,7 +15,7 @@ if ($_GET["download"]) {
 	$fp = "content/".$name.".jpg";
 	if ($result) {
 		file_put_contents($fp,$result);
-		echo "http://lamour.in.ua/html5/".$fp;
+		echo "http://beedevs.com/friend_burster/".$fp;
 	}
 	
 } else {

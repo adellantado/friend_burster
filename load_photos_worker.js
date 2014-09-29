@@ -1,4 +1,4 @@
-var url = "http://lamour.in.ua/html5/download.php?download=";
+var url = "http://beedevs.com/friend_burster/download.php?download=";
 var items;
 var xhrs = {};
 var photoNum = 0;

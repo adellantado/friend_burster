@@ -45,7 +45,7 @@ function init() {
  	console.log("capabilities: "+createjs.Sound.getCapabilities());
  	//createjs.Sound.addEventListener("loadComplete", createjs.proxy(this.loadMusicHandler, (this)));
  	//createjs.Sound.registerSound(popBalloonSound, "sound");
- 	createjs.Sound.registerManifest(manifest);
+ 	//createjs.Sound.registerManifest(manifest);
  	// init background
 
  	var background = new createjs.Bitmap(SKY);
@@ -139,11 +139,11 @@ function onBalloonCick(event) {
 	var balloon = event.target;
 	balloon.removeAllEventListeners();
 
-	if (soundInstance) {
-		soundInstance.play(createjs.Sound.INTERRUPT_ANY);
-	} else {
-		soundInstance = createjs.Sound.play('sound', createjs.Sound.INTERRUPT_ANY);
-	}
+//	if (soundInstance) {
+//		soundInstance.play(createjs.Sound.INTERRUPT_ANY);
+//	} else {
+//		soundInstance = createjs.Sound.play('sound', createjs.Sound.INTERRUPT_ANY);
+//	}
 
 	var anim = new createjs.BitmapAnimation(spriteSheet);
 	anim.scaleX = anim.scaleY = balloon.photo.scaleX;
@@ -196,8 +196,10 @@ function getScaleFill(image, destWidth, destHeight) {
 
 function preloadImage(friend) {
 	var image = new Image();
+    image.onload = function(event) {
+        nextFriend = friend;
+    }
 	image.src = friend.photo;
-	nextFriend = friend;
 }
 
 function startBalloon() {
