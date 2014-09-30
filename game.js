@@ -3,7 +3,10 @@ var stage;
 
 var assets_path = "assets/";
 
-var manifest = [{src: assets_path+"BalloonPopping.ogg", id: "sound"},{src: assets_path+"8_BIT_dubstep.ogg", id: "music"}];
+var manifest = [
+    {src: assets_path+"BalloonPopping.ogg", id: "sound"},
+    {src: assets_path+"8_BIT_dubstep.ogg", id: "music"}
+];
 
 var cloudIntensity = 0.15
 var BALLOON_URL = assets_path+'balloon.png';
@@ -26,14 +29,16 @@ var volumeButton;
 var menu;
 
 var internalId;
-var musicInstance;
-var soundInstance;
 
 var isPlayerMuted;
 
 var nextFriend;
 
 var balloonImage;
+
+var cache;
+var sound;
+
 
 function init() {
 	canvas = document.getElementById('canvas');
@@ -42,12 +47,9 @@ function init() {
 	createjs.Ticker.setFPS(60);
 	createjs.Ticker.addEventListener("tick", stage);
 
-	//createjs.Sound.registerPlugin(createjs.WebAudioPlugin);
- 	console.log("active sound plugin: "+createjs.Sound.activePlugin);
- 	console.log("capabilities: "+createjs.Sound.getCapabilities());
- 	//createjs.Sound.addEventListener("loadComplete", createjs.proxy(this.loadMusicHandler, (this)));
- 	//createjs.Sound.registerSound(popBalloonSound, "sound");
- 	//createjs.Sound.registerManifest(manifest);
+    cache = new Cache();
+    sound = new SoundManager(manifest);
+
  	// init background
 
  	var background = new createjs.Bitmap(SKY);
@@ -70,34 +72,37 @@ function init() {
 	initButtons();
 }
 
-
-function loadMusicHandler(event) {
-     
- }
-
-
 function getBalloonPosition(balloon) {
 	var res = Math.random() * (canvas.width - balloon.width());
 	return res;
 }
 
-function getBalloon(friend) {
-	var balloon = new createjs.Container();
-	
-	//var image = new createjs.Bitmap(friend.photo);
-	var balloonImage = new createjs.Bitmap(BALLOON_URL);
-	
-	balloon.addChild(balloonImage);
+function initBalloon(friend) {
 
-	createjs.Container.prototype.photo = balloonImage;
+    var balloon;// = cache.getBalloon();
+
+    if (!balloon) {
+        cache.setBalloon(balloon = new createjs.Container());
+        balloon.active = false;
+        var balloonBitmap = new createjs.Bitmap(BALLOON_URL);
+        balloon.addChild(balloonBitmap);
+    }
+
+
+
+
+	createjs.Container.prototype.photo = balloonBitmap;
 	createjs.Container.prototype.width = function () {
 		return this.photo.image.width * this.scaleX;
 	}
 	createjs.Container.prototype.height = function () {
 		return this.photo.image.height * this.scaleY;
 	}
+
+
+
 	balloon.friend = friend;
-	balloonImage.scaleX = balloonImage.scaleY = getScaleFill(balloon.photo.image, 100, 100);
+    balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloon.photo.image, 100, 100);
 
 	var bitmap = new createjs.Bitmap(friend.photo);
 		bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);	
@@ -111,6 +116,7 @@ function getBalloon(friend) {
 }
 
 function runBalloon(balloon) {
+    balloon.active = true;
 	var dev = 20;
 	var speed = 3500;
 	balloon.y = canvas.height + dev;
@@ -118,62 +124,64 @@ function runBalloon(balloon) {
 	tween.to({y: -balloon.height()}, speed).call(onRunComplete);
 }
 
-function runCloud() {
-	if (Math.random() < cloudIntensity) {
-		var speed = 3500;
-		var cloud = new createjs.Bitmap(CLOUD);
-		cloud.scaleX = cloud.scaleY = 0.4;
-		cloud.x = canvas.width;
-		cloud.y = Math.random() * (canvas.height - cloud.image.height);
-		stage.addChild(cloud);
-		var tween = createjs.Tween.get(cloud);
-		tween.to({x: -cloud.image.width}, speed).call(onRunComplete);
-	}
-	
+function initCloud() {
+    var cloudBitmap = new createjs.Bitmap(CLOUD);
+    cloudBitmap.scaleX = cloudBitmap.scaleY = 0.4;
+    cloudBitmap.x = canvas.width;
+    var speed = 3500;
+    cloudBitmap.y = Math.random() * (canvas.height - cloudBitmap.image.height);
+    stage.addChild(cloudBitmap);
+    var tween = createjs.Tween.get(cloudBitmap);
+    tween.to({x: -cloudBitmap.image.width}, speed).call(onRunComplete);
 }
 
-function removeBallon(balloon) {
-	createjs.Tween.removeTweens(balloon);
-	stage.removeChild(balloon);
+function runCloud() {
+	if (Math.random() < cloudIntensity) {
+        initCloud();
+	}
+}
+
+function removeTweenedItem(item) {
+	createjs.Tween.removeTweens(item);
+	stage.removeChild(item);
+    item.active = false;
 }
 
 function onBalloonCick(event) {
 	var balloon = event.target;
-	balloon.removeAllEventListeners();
+    popBalloon(balloon);
+}
 
-//	if (soundInstance) {
-//		soundInstance.play(createjs.Sound.INTERRUPT_ANY);
-//	} else {
-//		soundInstance = createjs.Sound.play('sound', createjs.Sound.INTERRUPT_ANY);
-//	}
+function popBalloon(balloon) {
 
-	var anim = new createjs.BitmapAnimation(spriteSheet);
-	anim.scaleX = anim.scaleY = balloon.photo.scaleX;
-	balloon.addChild(anim);
-	anim.addEventListener("animationend", function(){removeBallon(balloon);});
-	anim.gotoAndPlay(0);
+    balloon.removeAllEventListeners();
 
-	if(!burstedFriends[balloon.friend.id]) {
-		burstedFriends[balloon.friend.id] = 0;
-	}
-	burstedFriends[balloon.friend.id] += 1;
-	
-	console.log("count="+burstedFriends[balloon.friend.id]+", id="+balloon.friend.id);
+    sound.playPop();
 
-	
-	//removeBallon(balloon);
-}	
+    // TODO remove with createjs.Sprite
+    var anim = new createjs.Sprite(spriteSheet);
+    anim.scaleX = anim.scaleY = balloon.photo.scaleX;
+    balloon.addChild(anim);
+    anim.addEventListener("animationend", function(){
+        anim.removeAllEventListeners();
+        removeTweenedItem(balloon);
+    });
+    anim.gotoAndPlay(0);
+
+    countPops(balloon);
+}
+
+function countPops(balloon) {
+    if(!burstedFriends[balloon.friend.id]) {
+        burstedFriends[balloon.friend.id] = 0;
+    }
+    burstedFriends[balloon.friend.id] += 1;
+
+    console.log("count="+burstedFriends[balloon.friend.id]+", id="+balloon.friend.id);
+}
 
 function onRunComplete(tween) {
-	removeBallon(tween.target);
-}
-
-function onPhotoLoad() {
-	console.log("photo loaded");
-}
-
-function onPhotoError() {
-	console.log("photo error");
+	removeTweenedItem(tween.target);
 }
 
 function getScaleEnter(image, destWidth, destHeight) {
@@ -205,7 +213,7 @@ function preloadImage(friend) {
 }
 
 function startBalloon() {
-	var balloon = getBalloon(nextFriend);
+	var balloon = initBalloon(nextFriend);
 	var index = Math.round(Math.random()*(friends.length-1));
 	preloadImage(friends[index]);
 	balloon.x = getBalloonPosition(balloon);
@@ -219,16 +227,21 @@ function startBalloon() {
 function startGame() {
 	if (friends && friends.length>0) {
 		if (createjs.Ticker.getPaused()) {
-		createjs.Ticker.setPaused(false);
-		muteSounds(isPlayerMuted);
+		    createjs.Ticker.setPaused(false);
+
+            if (isPlayerMuted) {
+                sound.mute();
+            } else {
+                sound.unmute();
+            }
+
 		}
+
 		if (!internalId) {
 			internalId = setInterval(startBalloon, 500);
 		}
-		if (!musicInstance) {
-			musicInstance = createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE);
-	    	musicInstance.setVolume(0.2);
-		}
+
+        sound.playMusic().setVolume(0.2);
 	}
 }
 
@@ -236,24 +249,17 @@ function stopGame() {
 	clearInterval(internalId);
 	internalId = null;
 	createjs.Ticker.setPaused(true);
-	createjs.Sound.stop();
+    sound.stopMusic();
 	internalId = null;
-	musicInstance = null;
 }
 
 function pauseGame() {
 	clearInterval(internalId);
 	internalId = null;
-	muteSounds(true);
+    sound.mute();
+    sound.pauseMusic();
 	createjs.Ticker.setPaused(true);
 }
-
-function muteSounds(value) {
-	if (!createjs.Ticker.getPaused()) {
-		createjs.Sound.setMute(value);
-	}	
-}
-
 
 function createMenu() {
 	menu = new createjs.Container();
@@ -296,42 +302,46 @@ function initButtons() {
 		if (pause) {
 			this.removeAllChildren();
 			this.addChild(pauseBtn);
-			this.onClick = function () {
-				this.setPause(false);
+            this.addEventListener("click", function(e) {
+                playButton.setPause(false);
 				stage.addChild(menu);
 				pauseGame();
-			};
+			});
 		} else {
 			this.removeAllChildren();
 			this.addChild(playBtn);
-			this.onClick = function() {
-				if (friends) {
-					this.setPause(true);
-					stage.removeChild(menu);
-					startGame();
-				}
-			};
+            this.addEventListener("click", function(e) {
+                if (friends) {
+                    playButton.setPause(true);
+                    stage.removeChild(menu);
+                    startGame();
+                }
+
+            });
 		}
 	}
+
+
+
 	playButton.setPause(false);
 	volumeButton = new createjs.Container();
 	volumeButton.setMute = function (mute) {
 		if (mute) {
 			this.removeAllChildren();
 			this.addChild(muteBtn);
-			this.onClick = function () {
-				this.setMute(false);
+            this.addEventListener("click", function(e) {
+                volumeButton.setMute(false);
 				isPlayerMuted = false;
-				muteSounds(isPlayerMuted);
-			};
+				sound.unmute();
+			});
 		} else {
 			this.removeAllChildren();
 			this.addChild(volumeBtn);
-			this.onClick = function () {
-				this.setMute(true);
+            this.addEventListener("click", function(e) {
+                volumeButton.setMute(true);
 				isPlayerMuted = true;
-				muteSounds(isPlayerMuted);
-			};
+                sound.mute();
+			});
 		}
 	}
 	volumeButton.setMute(false);
@@ -340,10 +350,10 @@ function initButtons() {
 
 	playButton.y = volumeButton.y = 10;
 
-	playButton.onMouseOver = handCursorHandler;
-	volumeButton.onMouseOver = handCursorHandler;
-	playButton.onMouseOut = defaultCursorHandler;
-	volumeButton.onMouseOut = defaultCursorHandler;
+	playButton.addEventListener('mouseover', handCursorHandler);
+    volumeButton.addEventListener('mouseover', handCursorHandler);
+    playButton.addEventListener('mouseout', defaultCursorHandler);
+    volumeButton.addEventListener('mouseout', defaultCursorHandler);
 	playButton.x = canvas.width - 100;
 	volumeButton.x = canvas.width - 50;
 	playButton.scaleX = playButton.scaleY = 0.8;
@@ -352,10 +362,111 @@ function initButtons() {
 	stage.addChild(volumeButton);
 }
 
-function defaultCursorHandler() {
+function defaultCursorHandler(e) {
 	 document.body.style.cursor = 'default';
 }
 
-function handCursorHandler() {
+function handCursorHandler(e) {
 	document.body.style.cursor = 'pointer';
+}
+
+this.SoundManager = function(manifest) {
+
+    var self = this;
+
+    var manifest = manifest;
+
+    var musicInstance;
+    var soundInstance;
+    var paused = false;
+
+    if (!createjs.Sound.initializeDefaultPlugins()) {
+        return;
+    }
+
+    //createjs.Sound.alternateExtensions = ["mp3"];
+    //createjs.Sound.addEventListener("loadComplete", createjs.proxy(this.loadMusicHandler, (this)));
+    //createjs.Sound.addEventListener("fileload", playSound);
+    createjs.Sound.registerManifest(manifest);
+
+    this.playMusic = function() {
+
+        if (!musicInstance) {
+            //musicInstance = createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE);
+            musicInstance = createjs.Sound.createInstance("music");
+        }
+        if (paused) {
+            musicInstance.resume();
+            paused = false;
+        } else {
+            musicInstance.play(createjs.Sound.INTERRUPT_NONE);
+        }
+
+        return self;
+    }
+
+    this.stopMusic = function() {
+        createjs.Sound.stop();
+        musicInstance = null;
+        paused = false;
+        return self;
+    }
+
+    this.pauseMusic = function() {
+        if (musicInstance) {
+            paused = musicInstance.pause();
+        }
+        return self;
+    }
+
+    this.playPop = function() {
+        if (soundInstance) {
+            soundInstance.play(createjs.Sound.INTERRUPT_ANY);
+        } else {
+            soundInstance = createjs.Sound.play('sound', createjs.Sound.INTERRUPT_ANY);
+        }
+        return self;
+    }
+
+    this.setVolume = function(value) {
+        if (musicInstance) {
+            musicInstance.setVolume(value);
+        }
+        return self;
+    }
+
+    this.mute = function() {
+        createjs.Sound.setMute(true);
+        return self;
+    }
+
+    this.unmute = function() {
+        createjs.Sound.setMute(false);
+        return self;
+    }
+
+}
+
+this.Cache = function() {
+
+    var balloons = [];
+
+    this.setBalloon = function(balloon) {
+        if (balloons.indexOf(balloon) < 0) {
+            balloons.push(balloon);
+        }
+    }
+
+    this.getBalloon = function() {
+
+        var balloon;
+        var unactives = balloons.filter(function(item){return !item.active});
+        if (unactives && unactives.length > 0) {
+            balloon = unactives[0];
+        }
+
+        return balloon;
+
+    }
+
 }
