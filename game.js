@@ -20,8 +20,6 @@ var volumeIcon = assets_path+"volume_icon.png";
 
 var spriteSheet;
 
-var burstedFriends = {};
-
 var friends; // medium and big photos, nickname, first-last names, id
 			   
 var playButton;
@@ -50,19 +48,18 @@ function init() {
     cache = new Cache();
     sound = new SoundManager(manifest);
 
- 	// init background
+    spriteSheet = new createjs.SpriteSheet({
+        images: [assets_path+"balloon_pop1.png"],
+        frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
+    });
 
+ 	// init background
  	var background = new createjs.Bitmap(SKY);
  	background.image.onload = function () {
  		background.scaleX = background.scaleY = getScaleFill(background.image, canvas.width, canvas.height);
  		stage.update();
  	}
  	stage.addChild(background);
-
-	spriteSheet = new createjs.SpriteSheet({
-		images: [assets_path+"balloon_pop1.png"],
-		frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
-	});
 
 	// preload balloon
 	balloonImage = new Image();
@@ -72,19 +69,15 @@ function init() {
 	initButtons();
 }
 
-function getBalloonPosition(balloon) {
-	var res = Math.random() * (canvas.width - balloon.width());
-	return res;
-}
-
 function initBalloon(friend) {
 
     var balloon;// = cache.getBalloon();
 
+    var balloonBitmap;
     if (!balloon) {
         cache.setBalloon(balloon = new createjs.Container());
         balloon.active = false;
-        var balloonBitmap = new createjs.Bitmap(BALLOON_URL);
+        balloonBitmap = new createjs.Bitmap(BALLOON_URL);
         balloon.addChild(balloonBitmap);
     }
 
@@ -124,23 +117,26 @@ function runBalloon(balloon) {
 	tween.to({y: -balloon.height()}, speed).call(onRunComplete);
 }
 
-function initCloud() {
-    var cloudBitmap = new createjs.Bitmap(CLOUD);
-    cloudBitmap.scaleX = cloudBitmap.scaleY = 0.4;
-    cloudBitmap.x = canvas.width;
-    var speed = 3500;
-    cloudBitmap.y = Math.random() * (canvas.height - cloudBitmap.image.height);
-    stage.addChild(cloudBitmap);
-    var tween = createjs.Tween.get(cloudBitmap);
-    tween.to({x: -cloudBitmap.image.width}, speed).call(onRunComplete);
-}
-
+/**
+ *
+ */
 function runCloud() {
 	if (Math.random() < cloudIntensity) {
-        initCloud();
+        var cloudBitmap = new createjs.Bitmap(CLOUD);
+        cloudBitmap.scaleX = cloudBitmap.scaleY = 0.4;
+        cloudBitmap.x = canvas.width;
+        var speed = 3500;
+        cloudBitmap.y = Math.random() * (canvas.height - cloudBitmap.image.height);
+        stage.addChild(cloudBitmap);
+        var tween = createjs.Tween.get(cloudBitmap);
+        tween.to({x: -cloudBitmap.image.width}, speed).call(onRunComplete);
 	}
 }
 
+/**
+ *
+ * @param item
+ */
 function removeTweenedItem(item) {
 	createjs.Tween.removeTweens(item);
 	stage.removeChild(item);
@@ -148,7 +144,7 @@ function removeTweenedItem(item) {
 }
 
 function onBalloonCick(event) {
-	var balloon = event.target;
+	var balloon = event.target.parent;
     popBalloon(balloon);
 }
 
@@ -167,17 +163,6 @@ function popBalloon(balloon) {
         removeTweenedItem(balloon);
     });
     anim.gotoAndPlay(0);
-
-    countPops(balloon);
-}
-
-function countPops(balloon) {
-    if(!burstedFriends[balloon.friend.id]) {
-        burstedFriends[balloon.friend.id] = 0;
-    }
-    burstedFriends[balloon.friend.id] += 1;
-
-    console.log("count="+burstedFriends[balloon.friend.id]+", id="+balloon.friend.id);
 }
 
 function onRunComplete(tween) {
@@ -216,7 +201,7 @@ function startBalloon() {
 	var balloon = initBalloon(nextFriend);
 	var index = Math.round(Math.random()*(friends.length-1));
 	preloadImage(friends[index]);
-	balloon.x = getBalloonPosition(balloon);
+	balloon.x = Math.random() * (canvas.width - balloon.width())
 	balloon.y = canvas.height - 100;
 	stage.update();
 	stage.addChild(balloon);
@@ -224,7 +209,7 @@ function startBalloon() {
 	runCloud();
 }
 
-function startGame() {
+function playGame() {
 	if (friends && friends.length>0) {
 		if (createjs.Ticker.getPaused()) {
 		    createjs.Ticker.setPaused(false);
@@ -314,7 +299,7 @@ function initButtons() {
                 if (friends) {
                     playButton.setPause(true);
                     stage.removeChild(menu);
-                    startGame();
+                    playGame();
                 }
 
             });
@@ -350,24 +335,15 @@ function initButtons() {
 
 	playButton.y = volumeButton.y = 10;
 
-	playButton.addEventListener('mouseover', handCursorHandler);
-    volumeButton.addEventListener('mouseover', handCursorHandler);
-    playButton.addEventListener('mouseout', defaultCursorHandler);
-    volumeButton.addEventListener('mouseout', defaultCursorHandler);
+    playButton.cursor = 'pointer';
+    volumeButton.cursor = 'pointer';
+
 	playButton.x = canvas.width - 100;
 	volumeButton.x = canvas.width - 50;
 	playButton.scaleX = playButton.scaleY = 0.8;
 	volumeButton.scaleX = volumeButton.scaleY = 0.8;
 	stage.addChild(playButton);
 	stage.addChild(volumeButton);
-}
-
-function defaultCursorHandler(e) {
-	 document.body.style.cursor = 'default';
-}
-
-function handCursorHandler(e) {
-	document.body.style.cursor = 'pointer';
 }
 
 this.SoundManager = function(manifest) {
@@ -383,8 +359,6 @@ this.SoundManager = function(manifest) {
     if (!createjs.Sound.initializeDefaultPlugins()) {
         return;
     }
-
-    //createjs.Sound.alternateExtensions = ["mp3"];
     //createjs.Sound.addEventListener("loadComplete", createjs.proxy(this.loadMusicHandler, (this)));
     //createjs.Sound.addEventListener("fileload", playSound);
     createjs.Sound.registerManifest(manifest);
