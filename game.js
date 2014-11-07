@@ -342,6 +342,14 @@ function initButtons() {
 	stage.addChild(volumeButton);
 }
 
+
+this.BonusCounter = function() {
+
+    this.
+
+}
+
+
 this.SoundManager = function(manifest) {
 
     var self = this;
