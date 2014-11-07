@@ -38,7 +38,9 @@ var nextFriend;
 
 var balloonImage;
 
+
 var sound;
+var bonus;
 
 
 function init() {
@@ -49,6 +51,7 @@ function init() {
 	createjs.Ticker.addEventListener("tick", stage);
 
     sound = new SoundManager(manifest);
+    bonus = new BonusCounter();
 
     spriteSheet = new createjs.SpriteSheet({
         images: [animationPath+"balloon_pop1.png"],
@@ -151,6 +154,7 @@ function popBalloon(balloon) {
     balloon.removeAllEventListeners();
 
     sound.playPop();
+    bonus.addBurst(balloon);
 
     // TODO remove with createjs.Sprite
     var anim = new createjs.Sprite(spriteSheet);
@@ -349,8 +353,29 @@ this.BonusCounter = function() {
 
     var burstsCount = 0;
 
-    this.addBurst = function() {
+    var balloonMap = {};
+
+    this.addBurst = function(balloon) {
         burstsCount++;
+
+        var friendUid = balloon.friend.uid;
+
+        if (!balloonMap[friendUid]) {
+            balloonMap[friendUid] = 0;
+        }
+
+        balloonMap[friendUid]++;
+
+        if (console.table) {
+            console.table(balloonMap);
+        } else {
+            console.log("bursted: ", burstsCount);
+        }
+
+    }
+
+    this.saveProgress = function() {
+        //save
     }
 
 }
