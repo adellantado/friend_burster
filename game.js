@@ -72,6 +72,7 @@ function init() {
 
 	createMenu();
 	initButtons();
+    this.createCounter();
 }
 
 function initBalloon(friend) {
@@ -155,6 +156,7 @@ function popBalloon(balloon) {
 
     sound.playPop();
     bonus.addBurst(balloon);
+    this.updateCounter();
 
     // TODO remove with createjs.Sprite
     var anim = new createjs.Sprite(spriteSheet);
@@ -346,6 +348,34 @@ function initButtons() {
 	volumeButton.scaleX = volumeButton.scaleY = 0.8;
 	stage.addChild(playButton);
 	stage.addChild(volumeButton);
+
+
+    var counter;
+    this.createCounter = function() {
+        counter = new createjs.Text("0000", "30px Arial", "#ffffff");
+        counter.y = 20;
+        counter.x = 20;
+
+        stage.addChild(counter);
+    }
+
+    this.updateCounter = function() {
+
+        function FormatNumberLength(num, length) {
+            var r = "" + num;
+            while (r.length < length) {
+                r = "0" + r;
+            }
+            return r;
+        }
+
+        var burstCount = bonus.getBurstCount();
+        counter.text = FormatNumberLength(burstCount, 4);
+
+
+
+    }
+
 }
 
 
@@ -354,6 +384,10 @@ this.BonusCounter = function() {
     var burstsCount = 0;
 
     var balloonMap = {};
+
+    this.getBurstCount = function() {
+        return burstsCount;
+    }
 
     this.addBurst = function(balloon) {
         burstsCount++;
