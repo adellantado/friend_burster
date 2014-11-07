@@ -92,8 +92,6 @@ function initBalloon(friend) {
 		return this.photo.image.height * this.scaleY;
 	}
 
-
-
 	balloon.friend = friend;
     balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloon.photo.image, 100, 100);
 
@@ -104,7 +102,7 @@ function initBalloon(friend) {
 			bitmap.x = balloon.photo.scaleX*balloon.photo.image.width / 2 + 5;
 		balloon.addChild(bitmap);
 
-	balloon.addEventListener("click", onBalloonCick);
+	balloon.addEventListener("mousedown", onBalloonCick);
 	return balloon;
 }
 
