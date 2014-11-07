@@ -34,7 +34,6 @@ var nextFriend;
 
 var balloonImage;
 
-var cache;
 var sound;
 
 
@@ -45,7 +44,6 @@ function init() {
 	createjs.Ticker.setFPS(60);
 	createjs.Ticker.addEventListener("tick", stage);
 
-    cache = new Cache();
     sound = new SoundManager(manifest);
 
     spriteSheet = new createjs.SpriteSheet({
@@ -71,17 +69,15 @@ function init() {
 
 function initBalloon(friend) {
 
-    var balloon;// = cache.getBalloon();
+    var balloon;
 
     var balloonBitmap;
     if (!balloon) {
-        cache.setBalloon(balloon = new createjs.Container());
+        balloon = new createjs.Container();
         balloon.active = false;
         balloonBitmap = new createjs.Bitmap(BALLOON_URL);
         balloon.addChild(balloonBitmap);
     }
-
-
 
 
 	createjs.Container.prototype.photo = balloonBitmap;
@@ -417,30 +413,6 @@ this.SoundManager = function(manifest) {
     this.unmute = function() {
         createjs.Sound.setMute(false);
         return self;
-    }
-
-}
-
-this.Cache = function() {
-
-    var balloons = [];
-
-    this.setBalloon = function(balloon) {
-        if (balloons.indexOf(balloon) < 0) {
-            balloons.push(balloon);
-        }
-    }
-
-    this.getBalloon = function() {
-
-        var balloon;
-        var unactives = balloons.filter(function(item){return !item.active});
-        if (unactives && unactives.length > 0) {
-            balloon = unactives[0];
-        }
-
-        return balloon;
-
     }
 
 }
