@@ -2,22 +2,33 @@ var canvas;
 var stage;
 
 var assets_path = "assets/";
+var animationPath ="assets/animation/pop/";
+var musicPath = "assets/music/";
+var iconPath = "assets/icon/";
+var ballonPath = "assets/balloon/";
 
 var manifest = [
-    {src: assets_path+"BalloonPopping.ogg", id: "sound"},
-    {src: assets_path+"8_BIT_dubstep.ogg", id: "music"}
+    {src: musicPath+"BalloonPopping.ogg", id: "sound"},
+    {src: musicPath+"8_BIT_dubstep.ogg", id: "music"}
 ];
 
 var cloudIntensity = 0.15
-var BALLOON_URL = assets_path+'balloon.png';
+var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
 var SKY = assets_path+'esky.jpg';
 
+<<<<<<< HEAD
 var playIcon = assets_path+"play_icon.png";
 var pauseIcon = assets_path+"pause_icon.png";
 var muteIcon = assets_path+"mute_icon.png";
 var volumeIcon = assets_path+"volume_icon.png";
 var html5Icon = assets_path+"html5-badge-h-solo.png";
+=======
+var playIcon = iconPath+"play_icon.png";
+var pauseIcon = iconPath+"pause_icon.png";
+var muteIcon = iconPath+"mute_icon.png";
+var volumeIcon = iconPath+"volume_icon.png";
+>>>>>>> 55a9ab3b68671c2d5aa3949cc3e3460bf88d9acd
 
 var spriteSheet;
 
@@ -35,7 +46,9 @@ var nextFriend;
 
 var balloonImage;
 
+
 var sound;
+var bonus;
 
 
 function init() {
@@ -46,9 +59,10 @@ function init() {
 	createjs.Ticker.addEventListener("tick", stage);
 
     sound = new SoundManager(manifest);
+    bonus = new BonusCounter();
 
     spriteSheet = new createjs.SpriteSheet({
-        images: [assets_path+"balloon_pop1.png"],
+        images: [animationPath+"balloon_pop1.png"],
         frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
     });
 
@@ -66,6 +80,7 @@ function init() {
 
 	createMenu();
 	initButtons();
+    this.createCounter();
 }
 
 function initBalloon(friend) {
@@ -89,8 +104,6 @@ function initBalloon(friend) {
 		return this.photo.image.height * this.scaleY;
 	}
 
-
-
 	balloon.friend = friend;
     balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloon.photo.image, 100, 100);
 
@@ -101,7 +114,7 @@ function initBalloon(friend) {
 			bitmap.x = balloon.photo.scaleX*balloon.photo.image.width / 2 + 5;
 		balloon.addChild(bitmap);
 
-	balloon.addEventListener("click", onBalloonCick);
+	balloon.addEventListener("mousedown", onBalloonCick);
 	return balloon;
 }
 
@@ -150,6 +163,8 @@ function popBalloon(balloon) {
     balloon.removeAllEventListeners();
 
     sound.playPop();
+    bonus.addBurst(balloon);
+    this.updateCounter();
 
     // TODO remove with createjs.Sprite
     var anim = new createjs.Sprite(spriteSheet);
@@ -341,91 +356,32 @@ function initButtons() {
 	volumeButton.scaleX = volumeButton.scaleY = 0.8;
 	stage.addChild(playButton);
 	stage.addChild(volumeButton);
-}
 
 
-this.BonusCounter = function() {
+    var counter;
+    this.createCounter = function() {
+        counter = new createjs.Text("0000", "30px Arial", "#ffffff");
+        counter.y = 20;
+        counter.x = 20;
 
-    var burstsCount = 0;
-
-    this.addBurst = function() {
-        burstsCount++;
+        stage.addChild(counter);
     }
 
-}
+    this.updateCounter = function() {
 
-
-this.SoundManager = function(manifest) {
-
-    var self = this;
-
-    var manifest = manifest;
-
-    var musicInstance;
-    var soundInstance;
-    var paused = false;
-
-    if (!createjs.Sound.initializeDefaultPlugins()) {
-        return;
-    }
-    //createjs.Sound.addEventListener("loadComplete", createjs.proxy(this.loadMusicHandler, (this)));
-    //createjs.Sound.addEventListener("fileload", playSound);
-    createjs.Sound.registerManifest(manifest);
-
-    this.playMusic = function() {
-
-        if (!musicInstance) {
-            //musicInstance = createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE);
-            musicInstance = createjs.Sound.createInstance("music");
-        }
-        if (paused) {
-            musicInstance.resume();
-            paused = false;
-        } else {
-            musicInstance.play(createjs.Sound.INTERRUPT_NONE);
+        function FormatNumberLength(num, length) {
+            var r = "" + num;
+            while (r.length < length) {
+                r = "0" + r;
+            }
+            return r;
         }
 
-        return self;
-    }
+        var burstCount = bonus.getBurstCount();
+        counter.text = FormatNumberLength(burstCount, 4);
 
-    this.stopMusic = function() {
-        createjs.Sound.stop();
-        musicInstance = null;
-        paused = false;
-        return self;
-    }
 
-    this.pauseMusic = function() {
-        if (musicInstance) {
-            paused = musicInstance.pause();
-        }
-        return self;
-    }
 
-    this.playPop = function() {
-        if (soundInstance) {
-            soundInstance.play(createjs.Sound.INTERRUPT_ANY);
-        } else {
-            soundInstance = createjs.Sound.play('sound', createjs.Sound.INTERRUPT_ANY);
-        }
-        return self;
-    }
-
-    this.setVolume = function(value) {
-        if (musicInstance) {
-            musicInstance.setVolume(value);
-        }
-        return self;
-    }
-
-    this.mute = function() {
-        createjs.Sound.setMute(true);
-        return self;
-    }
-
-    this.unmute = function() {
-        createjs.Sound.setMute(false);
-        return self;
     }
 
 }
