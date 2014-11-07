@@ -17,6 +17,7 @@ var playIcon = assets_path+"play_icon.png";
 var pauseIcon = assets_path+"pause_icon.png";
 var muteIcon = assets_path+"mute_icon.png";
 var volumeIcon = assets_path+"volume_icon.png";
+var html5Icon = assets_path+"html5-badge-h-solo.png";
 
 var spriteSheet;
 
@@ -248,7 +249,7 @@ function createMenu() {
 	var menuHeight = 100;
 	var graphics = new createjs.Graphics().beginFill(createjs.Graphics.getRGB(255,255,255)).dr(0,0,menuWidth,menuHeight);
 	menu.addChild(new createjs.Shape(graphics));
-	var logo = new createjs.Bitmap('http://www.w3.org/html/logo/badge/html5-badge-h-solo.png');
+	var logo = new createjs.Bitmap(html5Icon);
 	logo.image.onload = function() {
 		logo.y = (menuHeight - logo.image.height)/2;
 		logo.x = 20;
