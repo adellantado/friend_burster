@@ -345,7 +345,11 @@ function initButtons() {
 
 this.BonusCounter = function() {
 
-    this.
+    var burstsCount = 0;
+
+    this.addBurst = function() {
+        burstsCount++;
+    }
 
 }
 
