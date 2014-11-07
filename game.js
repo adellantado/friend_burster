@@ -2,21 +2,25 @@ var canvas;
 var stage;
 
 var assets_path = "assets/";
+var animationPath ="assets/animation/pop/";
+var musicPath = "assets/music/";
+var iconPath = "assets/icon/";
+var ballonPath = "assets/balloon/";
 
 var manifest = [
-    {src: assets_path+"BalloonPopping.ogg", id: "sound"},
-    {src: assets_path+"8_BIT_dubstep.ogg", id: "music"}
+    {src: musicPath+"BalloonPopping.ogg", id: "sound"},
+    {src: musicPath+"8_BIT_dubstep.ogg", id: "music"}
 ];
 
 var cloudIntensity = 0.15
-var BALLOON_URL = assets_path+'balloon.png';
+var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
 var SKY = assets_path+'esky.jpg';
 
-var playIcon = assets_path+"play_icon.png";
-var pauseIcon = assets_path+"pause_icon.png";
-var muteIcon = assets_path+"mute_icon.png";
-var volumeIcon = assets_path+"volume_icon.png";
+var playIcon = iconPath+"play_icon.png";
+var pauseIcon = iconPath+"pause_icon.png";
+var muteIcon = iconPath+"mute_icon.png";
+var volumeIcon = iconPath+"volume_icon.png";
 
 var spriteSheet;
 
@@ -50,7 +54,7 @@ function init() {
     bonus = new BonusCounter();
 
     spriteSheet = new createjs.SpriteSheet({
-        images: [assets_path+"balloon_pop1.png"],
+        images: [animationPath+"balloon_pop1.png"],
         frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
     });
 
@@ -91,8 +95,6 @@ function initBalloon(friend) {
 		return this.photo.image.height * this.scaleY;
 	}
 
-
-
 	balloon.friend = friend;
     balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloon.photo.image, 100, 100);
 
@@ -103,7 +105,7 @@ function initBalloon(friend) {
 			bitmap.x = balloon.photo.scaleX*balloon.photo.image.width / 2 + 5;
 		balloon.addChild(bitmap);
 
-	balloon.addEventListener("click", onBalloonCick);
+	balloon.addEventListener("mousedown", onBalloonCick);
 	return balloon;
 }
 
