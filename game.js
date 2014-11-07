@@ -84,17 +84,18 @@ function initBalloon(friend) {
         balloon = new createjs.Container();
         balloon.active = false;
         balloonBitmap = new createjs.Bitmap(BALLOON_URL);
+
+        balloon.photo = balloonBitmap;
+
+        balloon.width = function () {
+            return this.photo.image.width * this.scaleX;
+        }
+        balloon.height = function () {
+            return this.photo.image.height * this.scaleY;
+        }
+
         balloon.addChild(balloonBitmap);
     }
-
-
-	createjs.Container.prototype.photo = balloonBitmap;
-	createjs.Container.prototype.width = function () {
-		return this.photo.image.width * this.scaleX;
-	}
-	createjs.Container.prototype.height = function () {
-		return this.photo.image.height * this.scaleY;
-	}
 
 	balloon.friend = friend;
     balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloon.photo.image, 100, 100);
