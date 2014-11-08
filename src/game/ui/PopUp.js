@@ -14,11 +14,16 @@ PopupManager = (function(){
         _dialogUI.attr( "title", title );
         _dialogUI.append( "<div>"+ message +"</div>" );
 
-        if(object === null){
+        if(object == null){
             _dialogUI.dialog({
                     resizable: false,
-                    height:140,
-                    modal: true
+                    height:200,
+                    modal: true,
+                    buttons: {
+                        Ok: function() {
+                            $( this ).dialog( "close" );
+                        }
+                    }
                 }
             );
         }else{
