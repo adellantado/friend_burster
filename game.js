@@ -7,9 +7,6 @@ var cloudIntensity = 0.15
 var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
 
-
-
-
 var spriteSheet;
 
 var internalId;
@@ -20,7 +17,7 @@ var nextFriend;
 
 var balloonImage;
 
-
+var counter;
 var sound;
 var bonus;
 var eventDispGame = new EventDispatcher();
@@ -31,7 +28,6 @@ function init() {
 	stage.enableMouseOver(55);
 	createjs.Ticker.setFPS(60);
 	createjs.Ticker.addEventListener("tick", stage);
-
     sound = new SoundManager(manifest);
     bonus = new BonusCounter();
 
@@ -48,9 +44,7 @@ function init() {
 }
 
 function initBalloon(friend) {
-
     var balloon;
-
     var balloonBitmap;
     if (!balloon) {
         balloon = new createjs.Container();
@@ -59,11 +53,11 @@ function initBalloon(friend) {
         balloon.addChild(balloonBitmap);
     }
 
-
 	createjs.Container.prototype.photo = balloonBitmap;
 	createjs.Container.prototype.width = function () {
 		return this.photo.image.width * this.scaleX;
 	}
+
 	createjs.Container.prototype.height = function () {
 		return this.photo.image.height * this.scaleY;
 	}
@@ -195,13 +189,10 @@ function playGame() {
             } else {
                 sound.unmute();
             }
-
 		}
-
 		if (!internalId) {
 			internalId = setInterval(startBalloon, 500);
 		}
-
         sound.playMusic().setVolume(0.2);
 	}
 }
@@ -222,22 +213,14 @@ function pauseGame() {
 	createjs.Ticker.setPaused(true);
 }
 
-eventDispGame.addEventListener("PAUSE_GAME", pauseGame);
-
-eventDispGame.addEventListener("PLAY_GAME", playGame);
-
-
-var counter;
-this.createCounter = function() {
+createCounter = function() {
 	counter = new createjs.Text("0000", "30px Arial", "#ffffff");
 	counter.y = 20;
 	counter.x = 20;
-
 	stage.addChild(counter);
 }
 
-this.updateCounter = function() {
-
+updateCounter = function() {
 	function FormatNumberLength(num, length) {
 		var r = "" + num;
 		while (r.length < length) {
@@ -248,7 +231,7 @@ this.updateCounter = function() {
 
 	var burstCount = bonus.getBurstCount();
 	counter.text = FormatNumberLength(burstCount, 4);
-
-
-
 }
+
+eventDispGame.addEventListener("PAUSE_GAME", pauseGame);
+eventDispGame.addEventListener("PLAY_GAME", playGame);
