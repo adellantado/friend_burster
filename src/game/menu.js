@@ -37,7 +37,7 @@ var ballonPath = "assets/balloon/";
                 this.addEventListener("click", function(e) {
                     playButton.setPause(false);
                     stage.addChild(menu);
-                    eventDisp.dispatchEvent(new GameEvent( "PAUSE_GAME") );
+                    eventDisp.dispatchEvent(new GameEvent(GameEventType.PAUSE_GAME) );
                     //pauseGame();
                 });
             } else {
@@ -47,7 +47,7 @@ var ballonPath = "assets/balloon/";
                     if (friends) {
                         playButton.setPause(true);
                         stage.removeChild(menu);
-                        eventDisp.dispatchEvent(new GameEvent( "PLAY_GAME" ));
+                        eventDisp.dispatchEvent(new GameEvent(GameEventType.START_GAME));
                         //playGame();
                     }
 

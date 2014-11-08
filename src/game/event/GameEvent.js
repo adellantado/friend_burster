@@ -12,5 +12,10 @@ function GameEvent(typeValue, dataValue){
         }
     }
     this.init();
-
 }
+
+GameEventType = {
+    START_GAME: "startGame",
+    PAUSE_GAME: "pauseGame",
+    GAME_LEVEL_CHANGED: "gameLevelChanged"
+};

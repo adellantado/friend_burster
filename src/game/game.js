@@ -3,7 +3,7 @@ var manifest = [
     {src: musicPath+"8_BIT_dubstep.ogg", id: "music"}
 ];
 
-var cloudIntensity = 0.15
+var cloudIntensity = 0.15;
 var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
 
@@ -240,5 +240,5 @@ updateCounter = function() {
 	counter.text = FormatNumberLength(burstCount, 4);
 }
 
-eventDispGame.addEventListener("PAUSE_GAME", pauseGame);
-eventDispGame.addEventListener("PLAY_GAME", playGame);
+eventDispGame.addEventListener(GameEventType.PAUSE_GAME, pauseGame);
+eventDispGame.addEventListener(GameEventType.START_GAME, playGame);
