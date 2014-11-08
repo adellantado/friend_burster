@@ -24,6 +24,7 @@ function AssetManager() {
     queue.on("complete", handleComplete, this);
 
     queue.loadManifest(this.balloonMafinest);
+    //queue.loadFile(balloonSave+'heart.png');
 
     function handleComplete() {
 

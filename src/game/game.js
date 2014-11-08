@@ -82,7 +82,7 @@ function runBalloon(balloon) {
 	var speed = balloon.vo.speed;
 	balloon.y = canvas.height;
 	var tween = createjs.Tween.get(balloon);
-	tween.to({y: -balloon.height()}, speed).call(onRunComplete);
+	tween.to({y: -balloon.height()}, speed).call(onRunBalloonComplete);
 }
 
 function stopBalloon(balloon) {
@@ -101,7 +101,7 @@ function runCloud() {
         cloudBitmap.y = Math.random() * (canvas.height - cloudBitmap.image.height);
         stage.addChild(cloudBitmap);
         var tween = createjs.Tween.get(cloudBitmap);
-        tween.to({x: -cloudBitmap.image.width}, speed).call(onRunComplete);
+        tween.to({x: -cloudBitmap.image.width}, speed).call(onRunCloudComplete);
 	}
 }
 
@@ -140,9 +140,13 @@ function popBalloon(balloon) {
     anim.gotoAndPlay(0);
 }
 
-function onRunComplete(tween) {
+function onRunBalloonComplete(tween) {
 	MissedBalloons.addMissedBallon(1);
 	removeTweenedItem(tween.target);
+}
+
+function onRunCloudComplete(tween) {
+    removeTweenedItem(tween.target);
 }
 
 function getScaleEnter(image, destWidth, destHeight) {
