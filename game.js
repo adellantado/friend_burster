@@ -1,12 +1,3 @@
-var canvas;
-var stage;
-
-var assets_path = "assets/";
-var animationPath ="assets/animation/pop/";
-var musicPath = "assets/music/";
-var iconPath = "assets/icon/";
-var ballonPath = "assets/balloon/";
-
 var manifest = [
     {src: musicPath+"BalloonPopping.ogg", id: "sound"},
     {src: musicPath+"8_BIT_dubstep.ogg", id: "music"}
@@ -15,20 +6,11 @@ var manifest = [
 var cloudIntensity = 0.15
 var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
-var SKY = assets_path+'esky.jpg';
 
-var playIcon = iconPath+"play_icon.png";
-var pauseIcon = iconPath+"pause_icon.png";
-var muteIcon = iconPath+"mute_icon.png";
-var volumeIcon = iconPath+"volume_icon.png";
+
+
 
 var spriteSheet;
-
-var friends; // medium and big photos, nickname, first-last names, id
-			   
-var playButton;
-var volumeButton;
-var menu;
 
 var internalId;
 
@@ -41,11 +23,11 @@ var balloonImage;
 
 var sound;
 var bonus;
+var eventDispGame = new EventDispatcher();
 
 
 function init() {
-	canvas = document.getElementById('canvas');
-	stage = new createjs.Stage(canvas);
+
 	stage.enableMouseOver(55);
 	createjs.Ticker.setFPS(60);
 	createjs.Ticker.addEventListener("tick", stage);
@@ -58,20 +40,10 @@ function init() {
         frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
     });
 
- 	// init background
- 	var background = new createjs.Bitmap(SKY);
- 	background.image.onload = function () {
- 		background.scaleX = background.scaleY = getScaleFill(background.image, canvas.width, canvas.height);
- 		stage.update();
- 	}
- 	stage.addChild(background);
-
 	// preload balloon
 	balloonImage = new Image();
 	balloonImage.src = BALLOON_URL;
 
-	createMenu();
-	initButtons();
     this.createCounter();
 }
 
@@ -250,130 +222,33 @@ function pauseGame() {
 	createjs.Ticker.setPaused(true);
 }
 
-function createMenu() {
-	menu = new createjs.Container();
-	var menuWidth = 420;
-	var menuHeight = 100;
-	var graphics = new createjs.Graphics().beginFill(createjs.Graphics.getRGB(255,255,255)).dr(0,0,menuWidth,menuHeight);
-	menu.addChild(new createjs.Shape(graphics));
-	var logo = new createjs.Bitmap('http://www.w3.org/html/logo/badge/html5-badge-h-solo.png');
-	logo.image.onload = function() {
-		logo.y = (menuHeight - logo.image.height)/2;
-		logo.x = 20;
-		menu.addChild(logo);
-	}
-	var text = new createjs.Text("Hire me or anyone from my team", "20px Arial");
-	text.x = 100;
-	text.y = 20;
-	menu.addChild(text);
-	var contacts = new createjs.Text("adellantado@gmail.com", "20px Arial", "#0000ff");
-	contacts.x= 100;
-	contacts.y = 50;
-	menu.addChild(contacts);
+eventDispGame.addEventListener("PAUSE_GAME", pauseGame);
 
-	menu.alpha = 0.8;
+eventDispGame.addEventListener("PLAY_GAME", playGame);
 
-	menu.x = (canvas.width - menuWidth) / 2;
-	menu.y = (canvas.height - menuHeight) / 2;
-	stage.addChild(menu);
 
-	stage.update();
+var counter;
+this.createCounter = function() {
+	counter = new createjs.Text("0000", "30px Arial", "#ffffff");
+	counter.y = 20;
+	counter.x = 20;
+
+	stage.addChild(counter);
 }
 
-function initButtons() {
-	var playBtn = new createjs.Bitmap(playIcon);
-	var pauseBtn = new createjs.Bitmap(pauseIcon);
-	var muteBtn = new createjs.Bitmap(muteIcon);
-	var volumeBtn = new createjs.Bitmap(volumeIcon);
-	
-	playButton = new createjs.Container();
-	playButton.setPause = function (pause) {
-		if (pause) {
-			this.removeAllChildren();
-			this.addChild(pauseBtn);
-            this.addEventListener("click", function(e) {
-                playButton.setPause(false);
-				stage.addChild(menu);
-				pauseGame();
-			});
-		} else {
-			this.removeAllChildren();
-			this.addChild(playBtn);
-            this.addEventListener("click", function(e) {
-                if (friends) {
-                    playButton.setPause(true);
-                    stage.removeChild(menu);
-                    playGame();
-                }
+this.updateCounter = function() {
 
-            });
+	function FormatNumberLength(num, length) {
+		var r = "" + num;
+		while (r.length < length) {
+			r = "0" + r;
 		}
+		return r;
 	}
 
+	var burstCount = bonus.getBurstCount();
+	counter.text = FormatNumberLength(burstCount, 4);
 
 
-	playButton.setPause(false);
-	volumeButton = new createjs.Container();
-	volumeButton.setMute = function (mute) {
-		if (mute) {
-			this.removeAllChildren();
-			this.addChild(muteBtn);
-            this.addEventListener("click", function(e) {
-                volumeButton.setMute(false);
-				isPlayerMuted = false;
-				sound.unmute();
-			});
-		} else {
-			this.removeAllChildren();
-			this.addChild(volumeBtn);
-            this.addEventListener("click", function(e) {
-                volumeButton.setMute(true);
-				isPlayerMuted = true;
-                sound.mute();
-			});
-		}
-	}
-	volumeButton.setMute(false);
-	//volumeButton.addChild(volumeBtn);
-
-
-	playButton.y = volumeButton.y = 10;
-
-    playButton.cursor = 'pointer';
-    volumeButton.cursor = 'pointer';
-
-	playButton.x = canvas.width - 100;
-	volumeButton.x = canvas.width - 50;
-	playButton.scaleX = playButton.scaleY = 0.8;
-	volumeButton.scaleX = volumeButton.scaleY = 0.8;
-	stage.addChild(playButton);
-	stage.addChild(volumeButton);
-
-
-    var counter;
-    this.createCounter = function() {
-        counter = new createjs.Text("0000", "30px Arial", "#ffffff");
-        counter.y = 20;
-        counter.x = 20;
-
-        stage.addChild(counter);
-    }
-
-    this.updateCounter = function() {
-
-        function FormatNumberLength(num, length) {
-            var r = "" + num;
-            while (r.length < length) {
-                r = "0" + r;
-            }
-            return r;
-        }
-
-        var burstCount = bonus.getBurstCount();
-        counter.text = FormatNumberLength(burstCount, 4);
-
-
-
-    }
 
 }
