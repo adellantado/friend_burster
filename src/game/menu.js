@@ -18,8 +18,8 @@ var ballonPath = "assets/balloon/";
 
     var playIcon = iconPath+"play_icon.png";
     var pauseIcon = iconPath+"pause_icon.png";
-    var muteIcon = iconPath+"mute_icon.png";
-    var volumeIcon = iconPath+"volume_icon.png";
+    var muteIcon = iconPath+"mute.png";
+    var volumeIcon = iconPath+"volume.png";
 
     var SKY = assets_path+'esky.jpg';
 
@@ -28,6 +28,8 @@ var ballonPath = "assets/balloon/";
         var pauseBtn = new createjs.Bitmap(pauseIcon);
         var muteBtn = new createjs.Bitmap(muteIcon);
         var volumeBtn = new createjs.Bitmap(volumeIcon);
+       /* volumeBtn.scaleX = volumeBtn.scaleY = 0.4;
+        muteBtn.scaleX = muteBtn.scaleY = 0.4;*/
 
         playButton = new createjs.Container();
         playButton.setPause = function (pause) {
@@ -37,7 +39,7 @@ var ballonPath = "assets/balloon/";
                 this.addEventListener("click", function(e) {
                     playButton.setPause(false);
                     stage.addChild(menu);
-                    eventDisp.dispatchEvent(new GameEvent( "PAUSE_GAME") );
+                    eventDisp.dispatchEvent(new GameEvent(GameEventType.PAUSE_GAME) );
                     //pauseGame();
                 });
             } else {
@@ -47,7 +49,7 @@ var ballonPath = "assets/balloon/";
                     if (friends) {
                         playButton.setPause(true);
                         stage.removeChild(menu);
-                        eventDisp.dispatchEvent(new GameEvent( "PLAY_GAME" ));
+                        eventDisp.dispatchEvent(new GameEvent(GameEventType.START_GAME));
                         //playGame();
                     }
 
@@ -79,7 +81,7 @@ var ballonPath = "assets/balloon/";
         volumeButton.setMute(false);
         //volumeButton.addChild(volumeBtn);
 
-        playButton.y = volumeButton.y = 10;
+        playButton.y = volumeButton.y = 490;
 
         playButton.cursor = 'pointer';
         volumeButton.cursor = 'pointer';
@@ -91,8 +93,6 @@ var ballonPath = "assets/balloon/";
         stage.addChild(playButton);
         stage.addChild(volumeButton);
     }
-
-
 
     function createMenu() {
         menu = new createjs.Container();

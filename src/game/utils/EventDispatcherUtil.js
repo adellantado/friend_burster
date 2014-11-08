@@ -50,7 +50,7 @@ EventDispatcherUtils = (function(){
         dispatchEvent: function(event){
             dispatchEvent(event);
         }
-    }
+    };
 })();
 
 
@@ -61,9 +61,9 @@ function EventDispatcher(){
 
     this.removeEventListener = function(type, listener){
         EventDispatcherUtils.removeEventListener(type, listener);
-    }
+    };
 
     this.dispatchEvent = function(event){
         EventDispatcherUtils.dispatchEvent(event);
-    }
+    };
 }

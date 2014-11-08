@@ -3,7 +3,7 @@ var manifest = [
     {src: musicPath+"8_BIT_dubstep.ogg", id: "music"}
 ];
 
-var cloudIntensity = 0.15
+var cloudIntensity = 0.15;
 //var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
 
@@ -79,9 +79,8 @@ function initBalloon(friend) {
 
 function runBalloon(balloon) {
     balloon.active = true;
-	var dev = 20;
 	var speed = balloon.vo.speed;
-	balloon.y = canvas.height + dev;
+	balloon.y = canvas.height;
 	var tween = createjs.Tween.get(balloon);
 	tween.to({y: -balloon.height()}, speed).call(onRunComplete);
 }
@@ -142,6 +141,7 @@ function popBalloon(balloon) {
 }
 
 function onRunComplete(tween) {
+	MissedBalloons.addMissedBallon(1);
 	removeTweenedItem(tween.target);
 }
 
@@ -157,7 +157,7 @@ function getScaleEnter(image, destWidth, destHeight) {
 
 function getScaleFill(image, destWidth, destHeight) {
 	var scale;
-	if (destWidth/image.width > destHeight/image.height) {
+	if (destWidth / image.width > destHeight / image.height) {
 		scale = destWidth/image.width;
 	} else {
 		scale = destHeight/image.height;
@@ -239,6 +239,13 @@ updateCounter = function() {
 	var burstCount = bonus.getTotalPoints();
 	counter.text = FormatNumberLength(burstCount, 4);
 }
+function faileGame(event){
+	if(event instanceof GameEvent){
+		stopGame();
+	}
 
-eventDispGame.addEventListener("PAUSE_GAME", pauseGame);
-eventDispGame.addEventListener("PLAY_GAME", playGame);
+}
+
+eventDispGame.addEventListener(GameEventType.PAUSE_GAME, pauseGame);
+eventDispGame.addEventListener(GameEventType.START_GAME, playGame);
+eventDispGame.addEventListener(GameEventType.MISSED_BALLOON, faileGame);

@@ -13,7 +13,7 @@ function BalloonFactory(gameLevel) {
 
     function levelChangedListener(e) {
         gameLevel = e.data;
-        console.log("gameLevelChanged", gameLevel);
+        console.log(GameEventType.GAME_LEVEL_CHANGED, gameLevel);
     }
 
 

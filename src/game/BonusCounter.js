@@ -18,7 +18,7 @@ function BonusCounter() {
         return gameLevel;
     }
     function levelInc() {
-        eventDis.dispatchEvent(new GameEvent("gameLevelChanged", ++gameLevel));
+        eventDis.dispatchEvent(new GameEvent(GameEventType.GAME_LEVEL_CHANGED, ++gameLevel));
     }
 
     this.getBurstCount = function() {
