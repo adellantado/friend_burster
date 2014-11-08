@@ -63,12 +63,14 @@ function initBalloon(friend) {
 
     balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloonContainer.photo.image, 60, 60);
 
-	var bitmap = new createjs.Bitmap(friend.photo);
-		bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);	
-			bitmap.rotation = 20;
-			bitmap.y = balloonContainer.photo.scaleY*balloonContainer.photo.image.height - 5;
-			bitmap.x = balloonContainer.photo.scaleX*balloonContainer.photo.image.width / 2 + 5;
-		balloonContainer.addChild(bitmap);
+    if (balloonContainer.vo.type == BalloonFactory.FRIEND_BALLOON) {
+        var bitmap = new createjs.Bitmap(friend.photo);
+        bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);
+        bitmap.rotation = 20;
+        bitmap.y = balloonContainer.photo.scaleY*balloonContainer.photo.image.height - 5;
+        bitmap.x = balloonContainer.photo.scaleX*balloonContainer.photo.image.width / 2 + 5;
+        balloonContainer.addChild(bitmap);
+    }
 
 	balloonContainer.addEventListener("mousedown", onBalloonCick);
 	return balloonContainer;
@@ -135,6 +137,12 @@ function popBalloon(balloon) {
         removeTweenedItem(balloon);
     });
     anim.gotoAndPlay(0);
+
+    var vo = balloon.vo;
+    if (vo.type == BalloonFactory.FRIEND_BALLOON) {
+        eventDispGame.dispatchEvent(new GameEvent(GameEventType.POST_ON_WALL, {owner_id: vo.friend.uid, message: "You've been bursted by me:)"}));
+    }
+
 }
 
 function onRunBalloonComplete(tween) {
@@ -251,5 +259,6 @@ function failGame(event){
 }
 
 eventDispGame.addEventListener(GameEventType.PAUSE_GAME, pauseGame);
+eventDispGame.addEventListener(GameEventType.POST_ON_WALL, pauseGame);
 eventDispGame.addEventListener(GameEventType.START_GAME, playGame);
 eventDispGame.addEventListener(GameEventType.MISSED_BALLOON, failGame);

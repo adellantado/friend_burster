@@ -18,5 +18,6 @@ GameEventType = {
     START_GAME: "startGame",
     PAUSE_GAME: "pauseGame",
     GAME_LEVEL_CHANGED: "gameLevelChanged",
-    MISSED_BALLOON: "missedBalloon"
+    MISSED_BALLOON: "missedBalloon",
+    POST_ON_WALL: "postOnWall"
 };

@@ -43,6 +43,9 @@
 
 	<script src="clojure/friend_burster.min.js"></script>
 
+    <script src="src/game/event/GameEvent.js"></script>
+    <script src="src/game/utils/EventDispatcherUtil.js"></script>
+
 </head>
 <body onload="start();">
 <div id="dialog" title="Basic dialog">
@@ -120,7 +123,8 @@
 		}
 
 		function login() {
-			VK.Auth.login(authInfo, 1 + 2);
+            const wall_access = 8192;
+			VK.Auth.login(authInfo, 1 + 2 + wall_access);
 			console.log("login");
 		}
 
@@ -128,6 +132,19 @@
 			console.log("sid: " + response.session.sid);
 			getFriends();
 		}
+
+        function postOnWall(params) {
+            VK.Api.call("wall.post", params, function(res) {
+                console.log("posted on the wall callback");
+                eventDis.dispatchEvent(new GameEvent(GameEventType.START_GAME));
+            });
+        }
+        var eventDis = new EventDispatcher();
+        eventDis.addEventListener(GameEventType.POST_ON_WALL, postOnWallListener);
+
+        function postOnWallListener(e) {
+            postOnWall(e.data);
+        }
 
 		function getFriends() {
 
@@ -166,8 +183,6 @@
 
 <script src="src/game/jquery/plugin/jquery.maxpaint.backgroundImages.js"></script>
 <script src="src/game/ui/PopUp.js"></script>
-<script src="src/game/event/GameEvent.js"></script>
-<script src="src/game/utils/EventDispatcherUtil.js"></script>
 <script src="src/game/createStage.js"></script>
 <script src="src/game/menu.js"></script>
 <script src="src/game/MissedBalloons.js"></script>

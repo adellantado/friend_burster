@@ -33,13 +33,13 @@ function BalloonFactory(gameLevel) {
         } else if (rand <= 6) {
             balloon = this.getSpeedBalloon();
         } else if (rand <= 7) {
-            balloon = this.getFriendBalloon();
+            balloon = this.getBonusBalloon();
         } else if (rand <= 8) {
             balloon = this.getHazardBalloon();
-        } else if (rand <= 9) {
+        } else if (rand <= 9.7) {
             balloon = this.getSwingBalloon();
         } else if (rand <= 10) {
-            balloon = this.getBonusBalloon();
+            balloon = this.getFriendBalloon();
         }
 
         return balloon;
