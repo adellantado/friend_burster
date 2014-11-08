@@ -114,10 +114,14 @@ function initBalloon(friend) {
 function runBalloon(balloon) {
     balloon.active = true;
 	var dev = 20;
-	var speed = 3500;
+	var speed = 3500 * Math.random();
 	balloon.y = canvas.height + dev;
 	var tween = createjs.Tween.get(balloon);
 	tween.to({y: -balloon.height()}, speed).call(onRunComplete);
+}
+
+function stopBalloon(balloon) {
+    createjs.Tween.removeTweens(balloon);
 }
 
 /**
@@ -153,6 +157,7 @@ function onBalloonCick(event) {
 
 function popBalloon(balloon) {
 
+    stopBalloon(balloon);
     balloon.removeAllEventListeners();
 
     sound.playPop();
