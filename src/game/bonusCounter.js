@@ -4,26 +4,32 @@
 function BonusCounter() {
 
     var burstsCount = 0;
+    var totalPoints = 0;
 
-    var balloonMap = {};
+    var friendBalloonMap = {};
 
     this.getBurstCount = function() {
         return burstsCount;
     }
 
+    this.getTotalPoints = function() {
+        return totalPoints;
+    }
+
     this.addBurst = function(balloon) {
         burstsCount++;
 
-        var friendUid = balloon.friend.uid;
+        var friendUid = balloon.vo.friend.uid;
+        totalPoints += balloon.vo.points;
 
-        if (!balloonMap[friendUid]) {
-            balloonMap[friendUid] = 0;
+        if (!friendBalloonMap[friendUid]) {
+            friendBalloonMap[friendUid] = 0;
         }
 
-        balloonMap[friendUid]++;
+        friendBalloonMap[friendUid]++;
 
         if (console.table) {
-            console.table(balloonMap);
+            console.table(friendBalloonMap);
         } else {
             console.log("bursted: ", burstsCount);
         }
