@@ -3,7 +3,7 @@
  */
 AppConst = {
         MAX_COUNT_BALOONS: 5,
-        GAME_OVER: "You missed game",
+        GAME_OVER: "GAME OVER",
         GAME_OVER_TITLE: "INFO"
 }
 

@@ -1,17 +1,18 @@
 var manifest = [
-    {src: musicPath+"BalloonPopping.ogg", id: "sound"},
-    {src: musicPath+"8_BIT_dubstep.ogg", id: "music"}
+    {src: musicPath+"BalloonPopping.ogg", id: "pop"},
+    {src: musicPath+"8_BIT_dubstep.ogg", id: "music"},
+    {src: musicPath+"smb_mariodie.ogg", id: "gameOver"},
+    {src: musicPath+"smb_pause.ogg", id: "pause"}
+
 ];
 
 var cloudIntensity = 0.15;
-//var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
 
 var spriteSheet;
 var internalId;
 var isPlayerMuted;
 var nextFriend;
-var balloonImage;
 
 var counter;
 var sound;
@@ -32,10 +33,6 @@ function init() {
         images: [animationPath+"balloon_pop1.png"],
         frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
     });
-
-	// preload balloon
-//	balloonImage = new Image();
-//	balloonImage.src = BALLOON_URL;
 
     this.createCounter();
 }
@@ -243,13 +240,14 @@ updateCounter = function() {
 	var burstCount = bonus.getTotalPoints();
 	counter.text = FormatNumberLength(burstCount, 4);
 }
-function faileGame(event){
+function failGame(event){
 	if(event instanceof GameEvent){
 		stopGame();
+        sound.playGameOver();
 	}
 
 }
 
 eventDispGame.addEventListener(GameEventType.PAUSE_GAME, pauseGame);
 eventDispGame.addEventListener(GameEventType.START_GAME, playGame);
-eventDispGame.addEventListener(GameEventType.MISSED_BALLOON, faileGame);
+eventDispGame.addEventListener(GameEventType.MISSED_BALLOON, failGame);
