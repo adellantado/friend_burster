@@ -85,6 +85,10 @@ function runBalloon(balloon) {
 	tween.to({y: -balloon.height()}, speed).call(onRunComplete);
 }
 
+function stopBalloon(balloon) {
+    createjs.Tween.removeTweens(balloon);
+}
+
 /**
  *
  */
@@ -118,6 +122,7 @@ function onBalloonCick(event) {
 
 function popBalloon(balloon) {
 
+    stopBalloon(balloon);
     balloon.removeAllEventListeners();
 
     sound.playPop();
