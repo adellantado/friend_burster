@@ -8,13 +8,9 @@ var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
 
 var spriteSheet;
-
 var internalId;
-
 var isPlayerMuted;
-
 var nextFriend;
-
 var balloonImage;
 
 var counter;
