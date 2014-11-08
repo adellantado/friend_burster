@@ -4,68 +4,41 @@
 	<!--<script src="http://code.createjs.com/easeljs-0.6.0.min.js"></script>-->
 	<!--<script src="http://code.createjs.com/tweenjs-0.4.0.min.js"></script>-->
 	<!--<script src="http://code.createjs.com/soundjs-0.4.0.min.js"></script>-->
-
+	<link href="css/reset.css" rel="stylesheet">
 	<link href="assets/jquery/jquery-ui.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
 
 	<script type="text/javascript" src="http://vkontakte.ru/js/api/share.js?9" charset="windows-1251"></script>
 	<script type="text/javascript" src="src/jquery/jquery.js"></script>
 	<script type="text/javascript" src="src/jquery/jquery-ui.js"></script>
-	<style type="text/css">
-		#main {
-			position:absolute;
-			top: 0;
-			left: 0;
-			bottom: 0;
-			width: 100%; 
-			height: 100%;
-			background-size: 100% 100%;
-			background-position: left top;
-			background-repeat: no-repeat;
-			background-image: url("assets/background.png");
-		}
 
-   		#w3org {
-   			position: absolute;
-   			left: 20px;
-   			bottom: 20px;
-   		}
-   		
-		#canvas
-		{
-		    display: block;
-		    margin: 80px auto;
-		}
+	<script src="src/createjs/events/EventDispatcher.js"></script>
+	<script src="src/createjs/events/Event.js"></script>
 
-	</style>
+	<script src="src/easeljs/events/MouseEvent.js"></script>
+	<script src="src/easeljs/geom/Matrix2D.js"></script>
+	<script src="src/easeljs/geom/Rectangle.js"></script>
+	<script src="src/easeljs/utils/UID.js"></script>
+	<script src="src/easeljs/utils/Ticker.js"></script>
+	<script src="src/easeljs/display/DisplayObject.js"></script>
+	<script src="src/easeljs/display/Container.js"></script>
+	<script src="src/easeljs/display/Stage.js"></script>
+	<script src="src/easeljs/display/Graphics.js"></script>
+	<script src="src/easeljs/display/Shape.js"></script>
+	<script src="src/easeljs/display/Text.js"></script>
+	<script src="src/easeljs/display/Bitmap.js"></script>
+	<script src="src/easeljs/display/SpriteSheet.js"></script>
+	<script src="src/easeljs/display/Sprite.js"></script>
+
+	<script src="src/createjs/utils/IndexOf.js"></script>
+	<script src="src/createjs/utils/Proxy.js"></script>
+	<script src="src/soundjs/Sound.js"></script>
+	<script src="src/soundjs/WebAudioPlugin.js"></script>
+
+	<script src="src/tweenjs/Tween.js"></script>
 
 </head>
 <body onload="start();">
-
-<script src="src/createjs/events/EventDispatcher.js"></script>
-<script src="src/createjs/events/Event.js"></script>
-
-<script src="src/easeljs/events/MouseEvent.js"></script>
-<script src="src/easeljs/geom/Matrix2D.js"></script>
-<script src="src/easeljs/geom/Rectangle.js"></script>
-<script src="src/easeljs/utils/UID.js"></script>
-<script src="src/easeljs/utils/Ticker.js"></script>
-<script src="src/easeljs/display/DisplayObject.js"></script>
-<script src="src/easeljs/display/Container.js"></script>
-<script src="src/easeljs/display/Stage.js"></script>
-<script src="src/easeljs/display/Graphics.js"></script>
-<script src="src/easeljs/display/Shape.js"></script>
-<script src="src/easeljs/display/Text.js"></script>
-<script src="src/easeljs/display/Bitmap.js"></script>
-<script src="src/easeljs/display/SpriteSheet.js"></script>
-<script src="src/easeljs/display/Sprite.js"></script>
-
-<script src="src/createjs/utils/IndexOf.js"></script>
-<script src="src/createjs/utils/Proxy.js"></script>
-<script src="src/soundjs/Sound.js"></script>
-<script src="src/soundjs/WebAudioPlugin.js"></script>
-
-<script src="src/tweenjs/Tween.js"></script>
-
 <div id="dialog" title="Basic dialog">
 	<p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
 </div>
@@ -180,6 +153,8 @@
 	</a>
     <canvas id="canvas" width="600" height="530"></canvas>
 </div>
+
+
 <script src="src/game/ui/PopUp.js"></script>
 <script src="src/game/event/GameEvent.js"></script>
 <script src="src/game/utils/EventDispatcherUtil.js"></script>
@@ -189,9 +164,10 @@
 <script src="src/game/BonusCounter.js"></script>
 <script src="src/game/BalloonFactory.js"></script>
 <script src="game.js"></script>
+
 <script>
 	$(function() {
-		PopupManager.showAlert("test MAX message", "title");
+	/*	PopupManager.showAlert("test MAX message", "title");*/
 	});
 </script>
 </body>

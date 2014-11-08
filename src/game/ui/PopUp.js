@@ -14,7 +14,7 @@ PopupManager = (function(){
         _dialogUI.attr( "title", title );
         _dialogUI.append( "<div>"+ message +"</div>" );
 
-        if(object == null){
+        if(object === null){
             _dialogUI.dialog({
                     resizable: false,
                     height:140,
@@ -30,7 +30,7 @@ PopupManager = (function(){
         showAlert: function(message, title){
             showAlert(message, title);
         }
-    }
+    };
 })();
 
 
