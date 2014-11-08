@@ -47,27 +47,27 @@ function BalloonFactory(gameLevel) {
 
 
     this.getOrdinaryBalloon = function() {
-        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 3500 * getSpeedKoef(), 10, assetManager);
+        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 3500 * getSpeedKoef(), 10, 1, assetManager);
     }
 
     this.getSpeedBalloon = function() {
-        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 7000 * getSpeedKoef(), 20, assetManager);
+        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 7000 * getSpeedKoef(), 20, 1, assetManager);
     }
 
     this.getHazardBalloon = function() {
-        return new Balloon(BalloonFactory.HAZARD_BALLOON, 4000 * getSpeedKoef(), -40, assetManager);
+        return new Balloon(BalloonFactory.HAZARD_BALLOON, 4000 * getSpeedKoef(), -40, 0, assetManager);
     }
 
     this.getSwingBalloon = function() {
-        return new Balloon(BalloonFactory.SWING_BALLOON, 5000 * getSpeedKoef(), 20, assetManager);
+        return new Balloon(BalloonFactory.SWING_BALLOON, 5000 * getSpeedKoef(), 20, 1, assetManager);
     }
 
     this.getFriendBalloon = function() {
-        return new Balloon(BalloonFactory.FRIEND_BALLOON, 4500* getSpeedKoef(), 0, assetManager);
+        return new Balloon(BalloonFactory.FRIEND_BALLOON, 4500* getSpeedKoef(), 0, 1, assetManager);
     }
 
     this.getBonusBalloon = function() {
-        return new Balloon(BalloonFactory.BONUS_BALLOON, 4500* getSpeedKoef(), 100, assetManager);
+        return new Balloon(BalloonFactory.BONUS_BALLOON, 4500* getSpeedKoef(), 100, 1, assetManager);
     }
 
 }
@@ -77,12 +77,13 @@ BalloonFactory.SWING_BALLOON = "swing";
 BalloonFactory.FRIEND_BALLOON = "friend";
 BalloonFactory.BONUS_BALLOON = "bonus";
 
-function Balloon(type, speed, points, assetManager) {
+function Balloon(type, speed, points, lifepoints, assetManager) {
 
     this.type = type;
     this.asset = getBalloonAsset();
     this.speed = speed;
     this.points = points;
+    this.lifepoints = lifepoints;
     this.friend;
 
     function getBalloonAsset() {
@@ -100,16 +101,6 @@ function Balloon(type, speed, points, assetManager) {
         }
 
         function getOrdinaryRandomAsset() {
-
-//            var assets = [
-//                "purple",
-//                "darkPurple",
-//                "GreenBalloon",
-//                "GreenYellow",
-//                "orange",
-//                "pink",
-//                "RedBalloon"
-//            ];
 
             var assets = assetManager.getBalloons();
             var length = assets.length;

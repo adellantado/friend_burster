@@ -138,8 +138,10 @@ function popBalloon(balloon) {
 }
 
 function onRunBalloonComplete(tween) {
-	MissedBalloons.addMissedBallon(1);
-	removeTweenedItem(tween.target);
+    var balloonContainer = tween.target;
+    var lifepoints = balloonContainer.vo.lifepoints;
+	MissedBalloons.addMissedBallon(lifepoints);
+	removeTweenedItem(balloonContainer);
 }
 
 function onRunCloudComplete(tween) {
