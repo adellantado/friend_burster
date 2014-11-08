@@ -23,7 +23,6 @@ var bonus;
 var balloonManager;
 var eventDispGame = new EventDispatcher();
 
-
 function init() {
 
 	stage.enableMouseOver(55);
@@ -31,7 +30,7 @@ function init() {
 	createjs.Ticker.addEventListener("tick", stage);
     sound = new SoundManager(manifest);
     bonus = new BonusCounter();
-    balloonManager = new BalloonFactory();
+    balloonManager = new BalloonFactory(bonus.getGameLevel());
 
     spriteSheet = new createjs.SpriteSheet({
         images: [animationPath+"balloon_pop1.png"],
@@ -48,7 +47,7 @@ function init() {
 function initBalloon(friend) {
     var balloonContainer;
     var balloonBitmap;
-    var balloon = balloonManager.getOrdinaryBalloon();
+    var balloon = balloonManager.getRandomBalloon();
     if (!balloonContainer) {
         balloonContainer = new createjs.Container();
         balloonContainer.vo = balloon;
@@ -187,6 +186,7 @@ function startBalloon() {
 	stage.update();
 	stage.addChild(balloon);
 	runBalloon(balloon);
+    bonus.addBalloon(balloon);
 	runCloud();
 }
 
