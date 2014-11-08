@@ -134,7 +134,7 @@ var ballonPath = "assets/balloon/";
         stage.addChild(background);
     }
 
-    createBackground();
+    //createBackground();
     createMenu();
-    initButtons();
+   initButtons();
 })();
