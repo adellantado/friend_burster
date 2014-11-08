@@ -2,14 +2,18 @@
  * Created by ader on 11/8/14.
  */
 
-function BalloonManager() {
+function BalloonFactory() {
 
     this.getOrdinaryBalloon = function() {
-        return new Balloon(BalloonManager.ORDINARY_BALLOON, 3500, 1);
+        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 3500, 10);
+    }
+
+    this.getSpeedBalloon = function() {
+        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 7000, 20);
     }
 
 }
-BalloonManager.ORDINARY_BALLOON = "ordinary";
+BalloonFactory.ORDINARY_BALLOON = "ordinary";
 
 function Balloon(type, speed, points) {
 
@@ -23,7 +27,7 @@ function Balloon(type, speed, points) {
 
         var asset;
 
-        if (type == BalloonManager.ORDINARY_BALLOON) {
+        if (type == BalloonFactory.ORDINARY_BALLOON) {
             asset = ballonPath+'balloon.png';
         } else {
             asset = ballonPath+'balloon.png';

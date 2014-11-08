@@ -20,6 +20,7 @@ var balloonImage;
 var counter;
 var sound;
 var bonus;
+var balloonManager;
 var eventDispGame = new EventDispatcher();
 
 
@@ -30,6 +31,7 @@ function init() {
 	createjs.Ticker.addEventListener("tick", stage);
     sound = new SoundManager(manifest);
     bonus = new BonusCounter();
+    balloonManager = new BalloonFactory();
 
     spriteSheet = new createjs.SpriteSheet({
         images: [animationPath+"balloon_pop1.png"],
@@ -44,42 +46,46 @@ function init() {
 }
 
 function initBalloon(friend) {
-    var balloon;
+    var balloonContainer;
     var balloonBitmap;
-    if (!balloon) {
-        balloon = new createjs.Container();
-        balloon.active = false;
-        balloonBitmap = new createjs.Bitmap(BALLOON_URL);
-        balloon.addChild(balloonBitmap);
+    var balloon = balloonManager.getOrdinaryBalloon();
+    if (!balloonContainer) {
+        balloonContainer = new createjs.Container();
+        balloonContainer.vo = balloon;
+        balloonContainer.active = false;
+        balloonBitmap = new createjs.Bitmap(balloonContainer.vo.asset);
+        balloonContainer.addChild(balloonBitmap);
     }
 
-	createjs.Container.prototype.photo = balloonBitmap;
-	createjs.Container.prototype.width = function () {
+    balloonContainer.photo = balloonBitmap;
+    balloonContainer.width = function () {
 		return this.photo.image.width * this.scaleX;
 	}
 
-	createjs.Container.prototype.height = function () {
+    balloonContainer.height = function () {
 		return this.photo.image.height * this.scaleY;
 	}
 
-	balloon.friend = friend;
-    balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloon.photo.image, 100, 100);
+	balloonContainer.friend = friend;
+    balloon.friend = friend;
+
+    balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloonContainer.photo.image, 100, 100);
 
 	var bitmap = new createjs.Bitmap(friend.photo);
 		bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);	
 			bitmap.rotation = 20;
-			bitmap.y = balloon.photo.scaleY*balloon.photo.image.height - 5;
-			bitmap.x = balloon.photo.scaleX*balloon.photo.image.width / 2 + 5;
-		balloon.addChild(bitmap);
+			bitmap.y = balloonContainer.photo.scaleY*balloonContainer.photo.image.height - 5;
+			bitmap.x = balloonContainer.photo.scaleX*balloonContainer.photo.image.width / 2 + 5;
+		balloonContainer.addChild(bitmap);
 
-	balloon.addEventListener("mousedown", onBalloonCick);
-	return balloon;
+	balloonContainer.addEventListener("mousedown", onBalloonCick);
+	return balloonContainer;
 }
 
 function runBalloon(balloon) {
     balloon.active = true;
 	var dev = 20;
-	var speed = 3500;
+	var speed = balloon.vo.speed;
 	balloon.y = canvas.height + dev;
 	var tween = createjs.Tween.get(balloon);
 	tween.to({y: -balloon.height()}, speed).call(onRunComplete);
@@ -234,7 +240,7 @@ updateCounter = function() {
 		return r;
 	}
 
-	var burstCount = bonus.getBurstCount();
+	var burstCount = bonus.getTotalPoints();
 	counter.text = FormatNumberLength(burstCount, 4);
 }
 
