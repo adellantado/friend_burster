@@ -4,6 +4,8 @@
 
 function BalloonFactory(gameLevel) {
 
+    var assetManager = new AssetManager();
+
     var gameLevel = gameLevel;
 
     var eventDis = new EventDispatcher();
@@ -45,27 +47,27 @@ function BalloonFactory(gameLevel) {
 
 
     this.getOrdinaryBalloon = function() {
-        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 3500 * getSpeedKoef(), 10);
+        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 3500 * getSpeedKoef(), 10, assetManager);
     }
 
     this.getSpeedBalloon = function() {
-        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 7000 * getSpeedKoef(), 20);
+        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 7000 * getSpeedKoef(), 20, assetManager);
     }
 
     this.getHazardBalloon = function() {
-        return new Balloon(BalloonFactory.HAZARD_BALLOON, 4000 * getSpeedKoef(), -40);
+        return new Balloon(BalloonFactory.HAZARD_BALLOON, 4000 * getSpeedKoef(), -40, assetManager);
     }
 
     this.getSwingBalloon = function() {
-        return new Balloon(BalloonFactory.SWING_BALLOON, 5000 * getSpeedKoef(), 20);
+        return new Balloon(BalloonFactory.SWING_BALLOON, 5000 * getSpeedKoef(), 20, assetManager);
     }
 
     this.getFriendBalloon = function() {
-        return new Balloon(BalloonFactory.FRIEND_BALLOON, 4500* getSpeedKoef(), 0);
+        return new Balloon(BalloonFactory.FRIEND_BALLOON, 4500* getSpeedKoef(), 0, assetManager);
     }
 
     this.getBonusBalloon = function() {
-        return new Balloon(BalloonFactory.BONUS_BALLOON, 4500* getSpeedKoef(), 100);
+        return new Balloon(BalloonFactory.BONUS_BALLOON, 4500* getSpeedKoef(), 100, assetManager);
     }
 
 }
@@ -75,7 +77,7 @@ BalloonFactory.SWING_BALLOON = "swing";
 BalloonFactory.FRIEND_BALLOON = "friend";
 BalloonFactory.BONUS_BALLOON = "bonus";
 
-function Balloon(type, speed, points) {
+function Balloon(type, speed, points, assetManager) {
 
     this.type = type;
     this.asset = getBalloonAsset();
@@ -87,10 +89,39 @@ function Balloon(type, speed, points) {
 
         var asset;
 
+        var subpath = "cool/"
+
         if (type == BalloonFactory.ORDINARY_BALLOON) {
-            asset = ballonPath+'balloon.png';
+            asset = getOrdinaryRandomAsset();
+        } else if (type == BalloonFactory.BONUS_BALLOON) {
+            asset = ballonPath + subpath + 'heart.png';
         } else {
-            asset = ballonPath+'balloon.png';
+            asset = assetManager.getBalloonAsset('purple');
+        }
+
+        function getOrdinaryRandomAsset() {
+
+//            var assets = [
+//                "purple",
+//                "darkPurple",
+//                "GreenBalloon",
+//                "GreenYellow",
+//                "orange",
+//                "pink",
+//                "RedBalloon"
+//            ];
+
+            var assets = assetManager.getBalloons();
+            var length = assets.length;
+            var randIndex =  Math.round(Math.random() / ( 1 / length));
+
+            if (randIndex >= length) {
+                randIndex = length-1;
+            }
+
+            var balloonId = assets[randIndex].id;
+
+            return assetManager.getBalloonAsset(balloonId);
         }
 
         return asset;

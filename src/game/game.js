@@ -4,7 +4,7 @@ var manifest = [
 ];
 
 var cloudIntensity = 0.15
-var BALLOON_URL = ballonPath+'balloon.png';
+//var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
 
 var spriteSheet;
@@ -34,8 +34,8 @@ function init() {
     });
 
 	// preload balloon
-	balloonImage = new Image();
-	balloonImage.src = BALLOON_URL;
+//	balloonImage = new Image();
+//	balloonImage.src = BALLOON_URL;
 
     this.createCounter();
 }
