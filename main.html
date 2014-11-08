@@ -154,7 +154,9 @@
     <canvas id="canvas" width="600" height="530"></canvas>
 </div>
 
-
+<div id="backgroundImages">
+</div>
+<script src="src/game/jquery/plugin/jquery.maxpaint.backgroundImages.js"></script>
 <script src="src/game/ui/PopUp.js"></script>
 <script src="src/game/event/GameEvent.js"></script>
 <script src="src/game/utils/EventDispatcherUtil.js"></script>
@@ -167,6 +169,9 @@
 
 <script>
 	$(function() {
+		var img = "assets/cloudy_sky_background.png";
+		var rusult = $('#backgroundImages').maxpaint_backgroundImages(img);
+
 	/*	PopupManager.showAlert("test MAX message", "title");*/
 	});
 </script>
