@@ -64,7 +64,7 @@ function initBalloon(friend) {
 	balloonContainer.friend = friend;
     balloon.friend = friend;
 
-    balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloonContainer.photo.image, 100, 100);
+    balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloonContainer.photo.image, 60, 60);
 
 	var bitmap = new createjs.Bitmap(friend.photo);
 		bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);	

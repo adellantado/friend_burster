@@ -94,7 +94,7 @@ function Balloon(type, speed, points, assetManager) {
         if (type == BalloonFactory.ORDINARY_BALLOON) {
             asset = getOrdinaryRandomAsset();
         } else if (type == BalloonFactory.BONUS_BALLOON) {
-            asset = ballonPath + subpath + 'heart.png';
+            asset = assetManager.getBalloonAsset('heart');
         } else {
             asset = assetManager.getBalloonAsset('purple');
         }
