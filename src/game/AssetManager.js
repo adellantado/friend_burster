@@ -27,6 +27,7 @@ function AssetManager() {
     queue.loadFile({id: "heart", src: balloonSave+'heart.png'});
     queue.loadFile({id: "box", src: ballonPath+'Gift-icon.png'});
     queue.loadFile({id: "purple-flash", src: balloonSave + 'purple-flash.png'});
+    queue.loadFile({id: "biohazard", src: balloonSave + 'biohazard.png'});
    
 
     function handleComplete() {

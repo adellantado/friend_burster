@@ -17,7 +17,7 @@ function BalloonFactory(gameLevel) {
     }
 
 
-    var koef = 1;
+    var koef = 1.8;
 
     function getSpeedKoef() {
         return koef - gameLevel*0.1;
@@ -103,7 +103,8 @@ function Balloon(type, speed, points, lifepoints, assetManager) {
             asset = assetManager.getBalloonAsset('heart');
         } else  if (type == BalloonFactory.SWING_BALLOON) {
              asset = assetManager.getBalloonAsset('purple-flash');
-           
+        } else if (type == BalloonFactory.HAZARD_BALLOON) {
+            asset = assetManager.getBalloonAsset('biohazard');
         } else {
             asset = assetManager.getBalloonAsset('purple');
         }
