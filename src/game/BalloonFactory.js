@@ -59,7 +59,7 @@ function BalloonFactory(gameLevel) {
     }
 
     this.getSwingBalloon = function() {
-        return new Balloon(BalloonFactory.SWING_BALLOON, 5000 * getSpeedKoef(), 20, 1, assetManager);
+        return new Balloon(BalloonFactory.SWING_BALLOON, 2000 * getSpeedKoef(), 20, 1, assetManager);
     }
 
     this.getFriendBalloon = function() {
@@ -101,6 +101,9 @@ function Balloon(type, speed, points, lifepoints, assetManager) {
             asset = getOrdinaryRandomAsset();
         } else if (type == BalloonFactory.BONUS_BALLOON) {
             asset = assetManager.getBalloonAsset('heart');
+        } else  if (type == BalloonFactory.SWING_BALLOON) {
+             asset = assetManager.getBalloonAsset('purple-flash');
+           
         } else {
             asset = assetManager.getBalloonAsset('purple');
         }
