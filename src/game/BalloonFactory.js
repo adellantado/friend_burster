@@ -70,6 +70,11 @@ function BalloonFactory(gameLevel) {
         return new Balloon(BalloonFactory.BONUS_BALLOON, 4500* getSpeedKoef(), 100, 1, assetManager);
     }
 
+
+    this.getBonusBox = function() {
+        return assetManager.getResult("box").src;
+    }
+
 }
 BalloonFactory.ORDINARY_BALLOON = "ordinary";
 BalloonFactory.HAZARD_BALLOON = "hazard";

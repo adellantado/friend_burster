@@ -63,12 +63,19 @@ function initBalloon(friend) {
 
     balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloonContainer.photo.image, 60, 60);
 
+    var bitmap;
     if (balloonContainer.vo.type == BalloonFactory.FRIEND_BALLOON) {
-        var bitmap = new createjs.Bitmap(friend.photo);
+        bitmap = new createjs.Bitmap(friend.photo);
         bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);
         bitmap.rotation = 20;
         bitmap.y = balloonContainer.photo.scaleY*balloonContainer.photo.image.height - 5;
         bitmap.x = balloonContainer.photo.scaleX*balloonContainer.photo.image.width / 2 + 5;
+        balloonContainer.addChild(bitmap);
+    } else if (balloonContainer.vo.type == BalloonFactory.BONUS_BALLOON) {
+        bitmap = new createjs.Bitmap(balloonManager.getBonusBox());
+        bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);
+        bitmap.y = balloonContainer.photo.scaleY*balloonContainer.photo.image.height - 10;
+        bitmap.x = 10;
         balloonContainer.addChild(bitmap);
     }
 
