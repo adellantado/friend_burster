@@ -20,7 +20,7 @@ function BalloonFactory(gameLevel) {
     var koef = 1;
 
     function getSpeedKoef() {
-        return koef + gameLevel*0.2;
+        return koef - gameLevel*0.1;
     }
 
     this.getRandomBalloon = function() {
