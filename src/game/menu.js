@@ -28,8 +28,6 @@ var ballonPath = "assets/balloon/";
         var pauseBtn = new createjs.Bitmap(pauseIcon);
         var muteBtn = new createjs.Bitmap(muteIcon);
         var volumeBtn = new createjs.Bitmap(volumeIcon);
-       /* volumeBtn.scaleX = volumeBtn.scaleY = 0.4;
-        muteBtn.scaleX = muteBtn.scaleY = 0.4;*/
 
         playButton = new createjs.Container();
         playButton.setPause = function (pause) {
@@ -40,7 +38,6 @@ var ballonPath = "assets/balloon/";
                     playButton.setPause(false);
                     stage.addChild(menu);
                     eventDisp.dispatchEvent(new GameEvent(GameEventType.PAUSE_GAME) );
-                    //pauseGame();
                 });
             } else {
                 this.removeAllChildren();
@@ -50,7 +47,6 @@ var ballonPath = "assets/balloon/";
                         playButton.setPause(true);
                         stage.removeChild(menu);
                         eventDisp.dispatchEvent(new GameEvent(GameEventType.START_GAME));
-                        //playGame();
                     }
 
                 });
@@ -94,47 +90,5 @@ var ballonPath = "assets/balloon/";
         stage.addChild(volumeButton);
     }
 
-    function createMenu() {
-        menu = new createjs.Container();
-        var menuWidth = 420;
-        var menuHeight = 100;
-        var graphics = new createjs.Graphics().beginFill(createjs.Graphics.getRGB(255,255,255)).dr(0,0,menuWidth,menuHeight);
-        menu.addChild(new createjs.Shape(graphics));
-        var logo = new createjs.Bitmap('http://www.w3.org/html/logo/badge/html5-badge-h-solo.png');
-        logo.image.onload = function() {
-            logo.y = (menuHeight - logo.image.height)/2;
-            logo.x = 20;
-            menu.addChild(logo);
-        }
-        var text = new createjs.Text("Hire me or anyone from my team", "20px Arial");
-        text.x = 100;
-        text.y = 20;
-        menu.addChild(text);
-        var contacts = new createjs.Text("adellantado@gmail.com", "20px Arial", "#0000ff");
-        contacts.x= 100;
-        contacts.y = 50;
-        menu.addChild(contacts);
-
-        menu.alpha = 0.8;
-
-        menu.x = (canvas.width - menuWidth) / 2;
-        menu.y = (canvas.height - menuHeight) / 2;
-        stage.addChild(menu);
-
-        stage.update();
-    }
-
-    function createBackground(){
-        // init background
-        var background = new createjs.Bitmap(SKY);
-        background.image.onload = function () {
-            background.scaleX = background.scaleY = getScaleFill(background.image, canvas.width, canvas.height);
-            stage.update();
-        }
-        stage.addChild(background);
-    }
-
-    //createBackground();
-    createMenu();
    initButtons();
 })();

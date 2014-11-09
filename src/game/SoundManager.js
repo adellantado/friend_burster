@@ -8,8 +8,12 @@ function SoundManager(manifest) {
     var manifest = manifest;
 
     var musicInstance;
-    var soundInstance;
+    var popInstance;
+    var gameOverInstance;
+    var pauseInstance;
     var paused = false;
+
+    var callback;
 
     if (!createjs.Sound.initializeDefaultPlugins()) {
         return;
@@ -49,10 +53,28 @@ function SoundManager(manifest) {
     }
 
     this.playPop = function() {
-        if (soundInstance) {
-            soundInstance.play(createjs.Sound.INTERRUPT_ANY);
+        if (popInstance) {
+            popInstance.play(createjs.Sound.INTERRUPT_ANY);
         } else {
-            soundInstance = createjs.Sound.play('sound', createjs.Sound.INTERRUPT_ANY);
+            popInstance = createjs.Sound.play('pop', createjs.Sound.INTERRUPT_ANY);
+        }
+        return self;
+    }
+
+    this.playGameOver = function() {
+        if (gameOverInstance) {
+            gameOverInstance.play(createjs.Sound.INTERRUPT_ANY);
+        } else {
+            gameOverInstance = createjs.Sound.play('gameOver', createjs.Sound.INTERRUPT_ANY);
+        }
+        return self;
+    }
+
+    this.playPause = function() {
+        if (pauseInstance) {
+            pauseInstance.play(createjs.Sound.INTERRUPT_ANY);
+        } else {
+            pauseInstance = createjs.Sound.play('pause', createjs.Sound.INTERRUPT_ANY);
         }
         return self;
     }

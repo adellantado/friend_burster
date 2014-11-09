@@ -1,17 +1,18 @@
 var manifest = [
-    {src: musicPath+"BalloonPopping.ogg", id: "sound"},
-    {src: musicPath+"8_BIT_dubstep.ogg", id: "music"}
+    {src: musicPath+"BalloonPopping.ogg", id: "pop"},
+    {src: musicPath+"8_BIT_dubstep.ogg", id: "music"},
+    {src: musicPath+"smb_mariodie.ogg", id: "gameOver"},
+    {src: musicPath+"smb_pause.ogg", id: "pause"}
+
 ];
 
 var cloudIntensity = 0.15;
-var BALLOON_URL = ballonPath+'balloon.png';
 var CLOUD = assets_path+'cloud1.png';
 
 var spriteSheet;
 var internalId;
 var isPlayerMuted;
 var nextFriend;
-var balloonImage;
 
 var counter;
 var sound;
@@ -32,10 +33,6 @@ function init() {
         images: [animationPath+"balloon_pop1.png"],
         frames: [[0,0,373,371,0,82.55,58.9],[0,371,373,371,0,82.55,58.9],[0,742,373,371,0,82.55,58.9],[0,1113,373,371,0,82.55,58.9],[0,1484,373,371,0,82.55,58.9],[373,0,373,371,0,82.55,58.9],[373,371,373,371,0,82.55,58.9],[373,742,373,371,0,82.55,58.9],[373,1113,373,371,0,82.55,58.9],[373,1484,373,371,0,82.55,58.9],[746,0,373,371,0,82.55,58.9],[746,371,373,371,0,82.55,58.9],[746,742,373,371,0,82.55,58.9],[746,1113,373,371,0,82.55,58.9],[746,1484,373,371,0,82.55,58.9],[1119,0,373,371,0,82.55,58.9],[1119,371,373,371,0,82.55,58.9],[1119,742,373,371,0,82.55,58.9],[1119,1113,373,371,0,82.55,58.9],[1119,1484,373,371,0,82.55,58.9]]
     });
-
-	// preload balloon
-	balloonImage = new Image();
-	balloonImage.src = BALLOON_URL;
 
     this.createCounter();
 }
@@ -64,14 +61,23 @@ function initBalloon(friend) {
 	balloonContainer.friend = friend;
     balloon.friend = friend;
 
-    balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloonContainer.photo.image, 100, 100);
+    balloonBitmap.scaleX = balloonBitmap.scaleY = getScaleFill(balloonContainer.photo.image, 60, 60);
 
-	var bitmap = new createjs.Bitmap(friend.photo);
-		bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);	
-			bitmap.rotation = 20;
-			bitmap.y = balloonContainer.photo.scaleY*balloonContainer.photo.image.height - 5;
-			bitmap.x = balloonContainer.photo.scaleX*balloonContainer.photo.image.width / 2 + 5;
-		balloonContainer.addChild(bitmap);
+    var bitmap;
+    if (balloonContainer.vo.type == BalloonFactory.FRIEND_BALLOON) {
+        bitmap = new createjs.Bitmap(friend.photo);
+        bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);
+        bitmap.rotation = 20;
+        bitmap.y = balloonContainer.photo.scaleY*balloonContainer.photo.image.height - 5;
+        bitmap.x = balloonContainer.photo.scaleX*balloonContainer.photo.image.width / 2 + 5;
+        balloonContainer.addChild(bitmap);
+    } else if (balloonContainer.vo.type == BalloonFactory.BONUS_BALLOON) {
+        bitmap = new createjs.Bitmap(balloonManager.getBonusBox());
+        bitmap.scaleX = bitmap.scaleY = getScaleEnter(bitmap.image, 50, 50);
+        bitmap.y = balloonContainer.photo.scaleY*balloonContainer.photo.image.height - 10;
+        bitmap.x = 10;
+        balloonContainer.addChild(bitmap);
+    }
 
 	balloonContainer.addEventListener("mousedown", onBalloonCick);
 	return balloonContainer;
@@ -82,7 +88,7 @@ function runBalloon(balloon) {
 	var speed = balloon.vo.speed;
 	balloon.y = canvas.height;
 	var tween = createjs.Tween.get(balloon);
-	tween.to({y: -balloon.height()}, speed).call(onRunComplete);
+	tween.to({y: -balloon.height()}, speed).call(onRunBalloonComplete);
 }
 
 function stopBalloon(balloon) {
@@ -101,7 +107,7 @@ function runCloud() {
         cloudBitmap.y = Math.random() * (canvas.height - cloudBitmap.image.height);
         stage.addChild(cloudBitmap);
         var tween = createjs.Tween.get(cloudBitmap);
-        tween.to({x: -cloudBitmap.image.width}, speed).call(onRunComplete);
+        tween.to({x: -cloudBitmap.image.width}, speed).call(onRunCloudComplete);
 	}
 }
 
@@ -138,11 +144,23 @@ function popBalloon(balloon) {
         removeTweenedItem(balloon);
     });
     anim.gotoAndPlay(0);
+
+    var vo = balloon.vo;
+    if (vo.type == BalloonFactory.FRIEND_BALLOON) {
+        eventDispGame.dispatchEvent(new GameEvent(GameEventType.POST_ON_WALL, {owner_id: vo.friend.uid, message: "You've been bursted by me:)"}));
+    }
+
 }
 
-function onRunComplete(tween) {
-	MissedBalloons.addMissedBallon(1);
-	removeTweenedItem(tween.target);
+function onRunBalloonComplete(tween) {
+    var balloonContainer = tween.target;
+    var lifepoints = balloonContainer.vo.lifepoints;
+	MissedBalloons.addMissedBallon(lifepoints);
+	removeTweenedItem(balloonContainer);
+}
+
+function onRunCloudComplete(tween) {
+    removeTweenedItem(tween.target);
 }
 
 function getScaleEnter(image, destWidth, destHeight) {
@@ -239,13 +257,15 @@ updateCounter = function() {
 	var burstCount = bonus.getTotalPoints();
 	counter.text = FormatNumberLength(burstCount, 4);
 }
-function faileGame(event){
+function failGame(event){
 	if(event instanceof GameEvent){
 		stopGame();
+        sound.playGameOver();
 	}
 
 }
 
 eventDispGame.addEventListener(GameEventType.PAUSE_GAME, pauseGame);
+eventDispGame.addEventListener(GameEventType.POST_ON_WALL, pauseGame);
 eventDispGame.addEventListener(GameEventType.START_GAME, playGame);
-eventDispGame.addEventListener(GameEventType.MISSED_BALLOON, faileGame);
+eventDispGame.addEventListener(GameEventType.MISSED_BALLOON, failGame);

@@ -4,6 +4,8 @@
 
 function BalloonFactory(gameLevel) {
 
+    var assetManager = new AssetManager();
+
     var gameLevel = gameLevel;
 
     var eventDis = new EventDispatcher();
@@ -18,7 +20,7 @@ function BalloonFactory(gameLevel) {
     var koef = 1;
 
     function getSpeedKoef() {
-        return koef + gameLevel*0.2;
+        return koef - gameLevel*0.1;
     }
 
     this.getRandomBalloon = function() {
@@ -31,13 +33,13 @@ function BalloonFactory(gameLevel) {
         } else if (rand <= 6) {
             balloon = this.getSpeedBalloon();
         } else if (rand <= 7) {
-            balloon = this.getFriendBalloon();
+            balloon = this.getBonusBalloon();
         } else if (rand <= 8) {
             balloon = this.getHazardBalloon();
-        } else if (rand <= 9) {
+        } else if (rand <= 9.7) {
             balloon = this.getSwingBalloon();
         } else if (rand <= 10) {
-            balloon = this.getBonusBalloon();
+            balloon = this.getFriendBalloon();
         }
 
         return balloon;
@@ -45,27 +47,32 @@ function BalloonFactory(gameLevel) {
 
 
     this.getOrdinaryBalloon = function() {
-        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 3500 * getSpeedKoef(), 10);
+        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 3500 * getSpeedKoef(), 10, 1, assetManager);
     }
 
     this.getSpeedBalloon = function() {
-        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 7000 * getSpeedKoef(), 20);
+        return new Balloon(BalloonFactory.ORDINARY_BALLOON, 7000 * getSpeedKoef(), 20, 1, assetManager);
     }
 
     this.getHazardBalloon = function() {
-        return new Balloon(BalloonFactory.HAZARD_BALLOON, 4000 * getSpeedKoef(), -40);
+        return new Balloon(BalloonFactory.HAZARD_BALLOON, 4000 * getSpeedKoef(), -40, 0, assetManager);
     }
 
     this.getSwingBalloon = function() {
-        return new Balloon(BalloonFactory.SWING_BALLOON, 5000 * getSpeedKoef(), 20);
+        return new Balloon(BalloonFactory.SWING_BALLOON, 5000 * getSpeedKoef(), 20, 1, assetManager);
     }
 
     this.getFriendBalloon = function() {
-        return new Balloon(BalloonFactory.FRIEND_BALLOON, 4500* getSpeedKoef(), 0);
+        return new Balloon(BalloonFactory.FRIEND_BALLOON, 4500* getSpeedKoef(), 0, 1, assetManager);
     }
 
     this.getBonusBalloon = function() {
-        return new Balloon(BalloonFactory.BONUS_BALLOON, 4500* getSpeedKoef(), 100);
+        return new Balloon(BalloonFactory.BONUS_BALLOON, 4500* getSpeedKoef(), 100, 1, assetManager);
+    }
+
+
+    this.getBonusBox = function() {
+        return assetManager.getResult("box").src;
     }
 
 }
@@ -75,22 +82,42 @@ BalloonFactory.SWING_BALLOON = "swing";
 BalloonFactory.FRIEND_BALLOON = "friend";
 BalloonFactory.BONUS_BALLOON = "bonus";
 
-function Balloon(type, speed, points) {
+function Balloon(type, speed, points, lifepoints, assetManager) {
 
     this.type = type;
     this.asset = getBalloonAsset();
     this.speed = speed;
     this.points = points;
+    this.lifepoints = lifepoints;
     this.friend;
 
     function getBalloonAsset() {
 
         var asset;
 
+        var subpath = "cool/"
+
         if (type == BalloonFactory.ORDINARY_BALLOON) {
-            asset = ballonPath+'balloon.png';
+            asset = getOrdinaryRandomAsset();
+        } else if (type == BalloonFactory.BONUS_BALLOON) {
+            asset = assetManager.getBalloonAsset('heart');
         } else {
-            asset = ballonPath+'balloon.png';
+            asset = assetManager.getBalloonAsset('purple');
+        }
+
+        function getOrdinaryRandomAsset() {
+
+            var assets = assetManager.getBalloons();
+            var length = assets.length;
+            var randIndex =  Math.round(Math.random() / ( 1 / length));
+
+            if (randIndex >= length) {
+                randIndex = length-1;
+            }
+
+            var balloonId = assets[randIndex].id;
+
+            return assetManager.getBalloonAsset(balloonId);
         }
 
         return asset;
