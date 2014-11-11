@@ -57,7 +57,7 @@ function init() {
 
 */
 
-    "images": ["blust.png"],
+    "images": [animationPath+"blust.png"],
 "frames": [
 
     [2, 2, 64, 48], 
@@ -244,7 +244,10 @@ function init() {
         "explosion1_0089":[88], 
         "explosion1_0090":[89]
 
+}
     });
+
+    //spriteSheet.x = spriteSheet.y = -200;
 
     this.createCounter();
 }
@@ -357,7 +360,10 @@ function popBalloon(balloon) {
 
     // TODO remove with createjs.Sprite
     var anim = new createjs.Sprite(spriteSheet);
-    anim.scaleX = anim.scaleY = balloon.photo.scaleX;
+   // anim.scaleX = anim.scaleY = balloon.photo.scaleX;
+   anim.scaleX = anim.scaleY = 3;
+   anim.x = -57;
+   anim.y = -30;
     balloon.addChild(anim);
     anim.addEventListener("animationend", function(){
         anim.removeAllEventListeners();
