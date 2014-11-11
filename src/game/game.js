@@ -32,7 +32,7 @@ function init() {
 
 
     spriteSheet = new createjs.SpriteSheet({
-/* old Sasha's blust
+ 
         images: [animationPath+"balloon_pop1.png"],
         frames: [[0,0,373,371,0,82.55,58.9],
                  [0,371,373,371,0,82.55,58.9],
@@ -55,9 +55,9 @@ function init() {
                  [1119,1113,373,371,0,82.55,58.9],
                  [1119,1484,373,371,0,82.55,58.9]]
 
-*/
 
-    "images": [animationPath+"blust.png"],
+
+/*    "images": [animationPath+"blust.png"],
 "frames": [
 
     [2, 2, 64, 48], 
@@ -244,7 +244,7 @@ function init() {
         "explosion1_0089":[88], 
         "explosion1_0090":[89]
 
-}
+}*/
     });
 
     //spriteSheet.x = spriteSheet.y = -200;
@@ -360,10 +360,10 @@ function popBalloon(balloon) {
 
     // TODO remove with createjs.Sprite
     var anim = new createjs.Sprite(spriteSheet);
-   // anim.scaleX = anim.scaleY = balloon.photo.scaleX;
-   anim.scaleX = anim.scaleY = 3;
-   anim.x = -57;
-   anim.y = -30;
+    anim.scaleX = anim.scaleY = balloon.photo.scaleX;
+   // anim.scaleX = anim.scaleY = 3;
+   // anim.x = -57;
+   // anim.y = -30;
     balloon.addChild(anim);
     anim.addEventListener("animationend", function(){
         anim.removeAllEventListeners();
