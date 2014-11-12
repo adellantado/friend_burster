@@ -30,7 +30,10 @@
                          :optimizations :advanced
                          :pretty-print false
                          :preamble ["react/react.min.js"]
-                         :externs ["react/externs/react.js" "tweenjs/Tween.js" "tweenjs/Ease.js"]}}]}
+                         :externs [
+                                   ;;"src/react/externs/react.js" 
+                                   "src/tweenjs/Tween.js" 
+                                   "src/tweenjs/Ease.js"]}}]}
   :figwheel {
              :http-server-root "public" ;; default and assumes "resources" 
              :server-port 3449 ;; default

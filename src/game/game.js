@@ -306,12 +306,12 @@ function runBalloon(balloon) {
 	var tween = createjs.Tween.get(balloon);
 	tween.to({y: -balloon.height()}, speed).call(onRunBalloonComplete);
 
-    //friend_burster.core.addWaving( balloon );
+    friend_burster.core.addWaving( balloon );
 
-    createjs.Tween.get(balloon, {loop:true}, true)
-        .to({x: balloon.x - 50},500,createjs.Ease.sineOut)
-        .to({x: balloon.x + 50},1000,createjs.Ease.sineInOut)
-        .to({x: balloon.x },500,createjs.Ease.sineIn);
+    // createjs.Tween.get(balloon, {loop:true}, true)
+    //     .to({x: balloon.x - 50},500,createjs.Ease.sineOut)
+    //     .to({x: balloon.x + 50},1000,createjs.Ease.sineInOut)
+    //     .to({x: balloon.x },500,createjs.Ease.sineIn);
     
 }
 

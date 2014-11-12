@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+        <script src="resources/public/js/compiled/out/goog/base.js" type="text/javascript"></script>
+        <script src="resources/public/js/compiled/friend_burster.js"></script>
+        <script type="text/javascript">goog.require("friend_burster.soc_client");</script>
+
+  </head>
+  <body onload="init();">
+    <script type="text/javascript">
+      function init()
+      {
+            friend_burster.soc_client.start ();
+      }
+    </script>
+
+
+
+    <div id="main" class="canvasHolder">
+      <a href="http://www.w3.org/html/logo/" target="_blank">
+        <img id="w3org" src="http://www.w3.org/html/logo/badge/html5-badge-h-css3-graphics-performance.png" width="197" height="64" alt="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, and Performance &amp; Integration" title="HTML5 Powered with CSS3 / Styling, Graphics, 3D &amp; Effects, and Performance &amp; Integration">
+      </a>
+      <canvas id="canvas" width="600" height="530"></canvas>
+    </div>
+
+
+  </body>
+</html>
