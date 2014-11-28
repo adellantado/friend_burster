@@ -1,11 +1,9 @@
 /** 
  * Created by maxpaint on 08.11.2014.
  */
-function SoundManager(manifest) {
+function SoundManager() {
 
     var self = this;
-
-    var manifest = manifest;
 
     var musicInstance;
     var popInstance;
@@ -18,6 +16,15 @@ function SoundManager(manifest) {
     if (!createjs.Sound.initializeDefaultPlugins()) {
         return;
     }
+
+    var manifest = [
+        {src: musicPath+"BalloonPopping.ogg", id: "pop"},
+        {src: musicPath+"8_BIT_dubstep.ogg", id: "music"},
+        {src: musicPath+"smb_mariodie.ogg", id: "gameOver"},
+        {src: musicPath+"smb_pause.ogg", id: "pause"}
+
+    ];
+
     //createjs.Sound.addEventListener("loadComplete", createjs.proxy(this.loadMusicHandler, (this)));
     //createjs.Sound.addEventListener("fileload", playSound);
     createjs.Sound.registerManifest(manifest);

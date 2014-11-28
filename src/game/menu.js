@@ -4,6 +4,7 @@
 var menu;
 var playButton;
 var volumeButton;
+var counter;
 var friends; // medium and big photos, nickname, first-last names, id
 
 var assets_path = "assets/";
@@ -90,5 +91,29 @@ var ballonPath = "assets/balloon/";
         stage.addChild(volumeButton);
     }
 
+    function initCounter() {
+        counter = new createjs.Text("0000", "30px Arial", "#ffffff");
+        counter.y = 20;
+        counter.x = 20;
+        stage.addChild(counter);
+    }
+
    initButtons();
+   initCounter();
+
+    var updateCounter = function() {
+        function FormatNumberLength(num, length) {
+            var r = "" + num;
+            while (r.length < length) {
+                r = "0" + r;
+            }
+            return r;
+        }
+
+        var burstCount = bonus.getTotalPoints();
+        counter.text = FormatNumberLength(burstCount, 4);
+    }
+
+    eventDisp.addEventListener(GameEventType.POP_BALLOON, updateCounter)
+
 })();
