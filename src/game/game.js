@@ -1,4 +1,3 @@
-
 var cloudIntensity = 0.15;
 var CLOUD = assets_path+'cloud1.png';
 
@@ -10,7 +9,7 @@ var sound;
 var bonus;
 var balloonManager;
 
-var gameTrigger
+var gameTrigger;
 
 function init() {
 
@@ -175,6 +174,7 @@ this.GameTrigger = function() {
     (init = function () {
         stage.enableMouseOver(55);
         createjs.Ticker.setFPS(60);
+        createjs.Ticker.setPaused(true);
         createjs.Ticker.addEventListener("tick", stage);
     })();
 
@@ -182,11 +182,11 @@ this.GameTrigger = function() {
         if (createjs.Ticker.getPaused()) {
             createjs.Ticker.setPaused(false);
 
-            return true;
-        }
+            if (!internalId) {
+                internalId = setInterval(trigger, 500);
+            }
 
-        if (!internalId) {
-            internalId = setInterval(trigger, 500);
+            return true;
         }
 
         return false;
@@ -224,6 +224,8 @@ this.EventBus = function() {
         reject = rejectFunc;
     }
 
+    var chain = new Chain(func);
+
     function frontListener(e) {
 
         switch (e.type) {
@@ -251,7 +253,7 @@ this.EventBus = function() {
             eventDispGame.addEventListener(eventTypes[i], frontListener);
         }
 
-        return new Chain(func);
+        return chain;
     }
 
     this.inactivate = function() {
@@ -260,7 +262,7 @@ this.EventBus = function() {
             eventDispGame.removeEventListener(eventTypes[i], frontListener);
         }
 
-        return new Chain(func);
+        return chain;
     }
 
     this.dispatchPostOnTheWall = function(vo) {
@@ -283,10 +285,11 @@ this.TweenChain = function() {
         reject = rejectFunc;
     }
 
+    var chain = new Chain(func);
+
     this.runBalloon = function(balloon) {
 
         var speed = balloon.vo.speed;
-
         var tween = createjs.Tween.get(balloon);
         tween.to({y: -balloon.height()}, speed).call(resolve);
 
@@ -295,18 +298,17 @@ this.TweenChain = function() {
             .to({x: balloon.x + 50},1000,createjs.Ease.sineInOut)
             .to({x: balloon.x },500,createjs.Ease.sineIn);
 
-        return new Chain(func);
+        return chain;
     }
 
     this.runCloud = function(cloud) {
 
         var speed = 3500;
-
         var tween = createjs.Tween.get(cloud);
 
         tween.to({x: -cloud.image.width}, speed).call(resolve);
 
-        return new Chain(func);
+        return chain;
 
     }
 
@@ -323,22 +325,21 @@ this.SpriteChain = function() {
         reject = rejectFunc;
     }
 
-    var anim;
-    var _balloon;
+    var chain = new Chain(func);
 
-    function addPopAnim() {
-        anim.scaleX = anim.scaleY = _balloon.photo.scaleX;
-        _balloon.addChild(anim);
+    function addPopAnim(anim, balloon) {
+        anim.scaleX = anim.scaleY = balloon.photo.scaleX;
+        balloon.addChild(anim);
     }
 
-    function onAnimationEnd() {
+    function onAnimationEnd(e) {
+        var anim = e.target;
+        var balloon = anim.parent;
         anim.removeAllEventListeners();
-        resolve(_balloon);
+        resolve(balloon);
     }
 
-    this.popAnim = function(ballon) {
-
-        _balloon = ballon;
+    this.popAnim = function(balloon) {
 
         spriteSheet = spriteSheet || new createjs.SpriteSheet({
             images: [animationPath+"balloon_pop1.png"],
@@ -368,10 +369,10 @@ this.SpriteChain = function() {
         anim = new createjs.Sprite(spriteSheet);
         anim.addEventListener("animationend", onAnimationEnd);
 
-        addPopAnim();
+        addPopAnim(anim, balloon);
         anim.gotoAndPlay(0);
 
-        return new Chain(func);
+        return chain;
     }
 }
 
@@ -391,12 +392,12 @@ this.SpriteChain = function() {
         })
         .then(new SpriteChain().popAnim)
         .then(removeTweenedItem)
-        .map(function(balloon){
-            var vo = balloon.vo;
-            if (vo.type == BalloonFactory.FRIEND_BALLOON) {
-                eventBus.dispatchPostOnTheWall(vo);
-            }
-        })
+//        .map(function(balloon){
+//            var vo = balloon.vo;
+//            if (vo.type == BalloonFactory.FRIEND_BALLOON) {
+//                eventBus.dispatchPostOnTheWall(vo);
+//            }
+//        })
 
 
     var balloonStream = new Chain();
@@ -416,9 +417,6 @@ this.SpriteChain = function() {
             return balloon;
         })
         .then(new TweenChain().runBalloon)
-        .filter(function(tween) {
-            return tween;
-        })
         .map(function (tween) {
             return tween.target;
         })
@@ -433,12 +431,11 @@ this.SpriteChain = function() {
 
     var cloudStream = new Chain();
     cloudStream
-        .filter(Math.random() < cloudIntensity)
+        .filter(function() {
+            return Math.random() < cloudIntensity;
+        })
         .then(initCloud)
         .then(new TweenChain().runCloud)
-        .filter(function(tween) {
-            return tween;
-        })
         .map(function (tween) {
             return tween.target;
         })

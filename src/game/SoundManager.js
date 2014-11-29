@@ -13,10 +13,6 @@ function SoundManager() {
 
     var callback;
 
-    if (!createjs.Sound.initializeDefaultPlugins()) {
-        return;
-    }
-
     var manifest = [
         {src: musicPath+"BalloonPopping.ogg", id: "pop"},
         {src: musicPath+"8_BIT_dubstep.ogg", id: "music"},
@@ -24,6 +20,10 @@ function SoundManager() {
         {src: musicPath+"smb_pause.ogg", id: "pause"}
 
     ];
+
+    if (!createjs.Sound.initializeDefaultPlugins()) {
+        return;
+    }
 
     //createjs.Sound.addEventListener("loadComplete", createjs.proxy(this.loadMusicHandler, (this)));
     //createjs.Sound.addEventListener("fileload", playSound);
