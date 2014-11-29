@@ -11,6 +11,8 @@ var balloonManager;
 
 var gameTrigger;
 
+var cursor;
+
 function init() {
 
     gameTrigger = new GameTrigger();
@@ -444,5 +446,43 @@ this.SpriteChain = function() {
 
     var eventBus = new EventBus();
     var eventBusStream = eventBus.activate().execute();
+
+    // socket's streams
+    var dataExchanger = new SocketDataExchanger();
+    var listenChains = dataExchanger.getListenChain();
+    var sendChains = dataExchanger.getSendChain(stage);
+
+    var moveChain = listenChains.move
+        .then(function(pos){
+
+            if (!cursor) {
+                cursor = new createjs.Shape(new createjs.Graphics().beginFill(createjs.Graphics.getRGB(255,0,0)).drawCircle(0,0,4));
+                stage.addChild(cursor);
+                //stage.setChildIndex(cursor, 100);
+            }
+
+            return pos;
+        })
+        .then(function(pos){
+            cursor.x = pos.x;
+            cursor.y = pos.y;
+        });
+
+    var clickChain = listenChains.click.then(function(pos){
+        imitateClick(pos.x, pos.y);
+    });
+
+
+function imitateClick(clientx, clienty) {
+    var theEvent = document.createEvent("MouseEvent");
+    theEvent.initMouseEvent("mousedown", true, true, window, 0, 0, 0, clientx, clienty, false, false, false, false, 0, null);
+//MouseEvent.prototype.initMouseEvent = function(typeArg,canBubbleArg,cancelableArg,viewArg,detailArg,screenXArg,screenYArg,clientXArg,clientYArg,ctrlKeyArg,altKeyArg,shiftKeyArg,metaKeyArg,buttonArg,relatedTargetArg
+//    var element = document.getElementById('canvas');
+//    element.dispatchEvent(theEvent);
+    var p = createjs.Stage.prototype;
+    p._handleMouseDown(theEvent);
+
+}
+
 
 /////
