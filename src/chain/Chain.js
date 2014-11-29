@@ -18,13 +18,13 @@ this.Chain = function(func) {
     }
 
     this.resolve = function(data) {
-        var res;
+        var res = data;
         if (resolveFunc) {
             res = resolveFunc(data);
 
             resolved = true;
 
-            if (res instanceof Chain) {
+            if (res instanceof Chain && next) {
                 res.setNext(next);
                 next = null;
             }
@@ -37,7 +37,7 @@ this.Chain = function(func) {
     }
 
     this.reject = function(data) {
-        var res;
+        var res = data;
         if (rejectFunc) {
             res = rejectFunc(data);
             resolved = false;
@@ -121,10 +121,7 @@ this.Chain = function(func) {
 
         resolveFunc = function(data) {
 
-            var res = filter;
-            if (typeof filter == 'function') {
-                res = filter(data);
-            }
+            var res = filter(data);
 
             if (!res) {
                 if (next) {
