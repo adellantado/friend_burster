@@ -381,10 +381,16 @@ this.SpriteChain = function() {
     // Streams
 
     var balloonClickedStream = new Chain();
-    balloonClickedStream
+
+    var popBalloonStream;
+
+        ( popBalloonStream =
+
+            balloonClickedStream
         .map(function(event){
             return event.target.parent;
         })
+            )
         .then(stopBalloon)
         .then(popBalloon)
         .then(function(balloon){
@@ -469,7 +475,17 @@ this.SpriteChain = function() {
         });
 
     var clickChain = listenChains.click.then(function(pos){
-        imitateClick(pos.x, pos.y);
+        //imitateClick(pos.x, pos.y);
+
+        var children = stage.children;
+
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (child instanceof createjs.Container && child.hitTest(pos.x, pos.y)) {
+                return popBalloonStream.resolve(child);
+            }
+        }
+
     });
 
 
