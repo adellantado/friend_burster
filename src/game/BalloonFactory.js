@@ -23,8 +23,7 @@ function BalloonFactory(gameLevel) {
         return koef - gameLevel*0.1;
     }
 
-    this.getRandomBalloon = function() {
-        var rand = Math.random() * 10;
+    this.getRandomBalloon = function(rand) {
 
         var balloon;
 

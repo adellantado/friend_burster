@@ -13,6 +13,8 @@ var gameTrigger;
 
 var cursor;
 
+var isHost = false;
+
 function init() {
 
     gameTrigger = new GameTrigger();
@@ -22,10 +24,10 @@ function init() {
 
 }
 
-function initBalloon(friend) {
+function initBalloon(tick, friend) {
     var balloonContainer;
     var balloonBitmap;
-    balloon = balloonManager.getRandomBalloon();
+    balloon = balloonManager.getRandomBalloon(1);
     if (!balloonContainer) {
         balloonContainer = new createjs.Container();
         balloonContainer.vo = balloon;
@@ -63,7 +65,7 @@ function initBalloon(friend) {
         balloonContainer.addChild(bitmap);
     }
 
-    balloonContainer.x = Math.random() * (canvas.width - balloonContainer.width())
+    balloonContainer.x = tick * (canvas.width - balloonContainer.width());
     balloonContainer.y = canvas.height - 100;
 
     stage.update();
@@ -166,11 +168,13 @@ function failGame() {
     sound.playGameOver();
 }
 
-
+function getRand() {
+    return Math.random();
+}
 
 this.GameTrigger = function() {
 
-    var internalId;
+    var ins;
 
     var init;
     (init = function () {
@@ -184,8 +188,8 @@ this.GameTrigger = function() {
         if (createjs.Ticker.getPaused()) {
             createjs.Ticker.setPaused(false);
 
-            if (!internalId) {
-                internalId = setInterval(trigger, 500);
+            if (isHost && !ins) {
+                ins = setInterval(trigger, 500)
             }
 
             return true;
@@ -195,14 +199,14 @@ this.GameTrigger = function() {
     }
 
     this.stop = function() {
-        clearInterval(internalId);
-        internalId = null;
         createjs.Ticker.setPaused(true);
+        clearInterval(ins);
+        ins = null
     }
 
     function trigger() {
         balloonStream.resolve();
-        cloudStream.resolve();
+        //cloudStream.resolve();
     }
 
 }
@@ -409,12 +413,19 @@ this.SpriteChain = function() {
 
 
     var balloonStream = new Chain();
-    balloonStream
-        .then(function() {
-            var index = Math.round(Math.random()*(friends.length-1));
-            preloadImage(friends[index]);
-            return nextFriend;
-        })
+    var tickBalloonStream;
+        (tickBalloonStream = balloonStream
+//            .then(function() {
+//                var index = Math.round(Math.random()*(friends.length-1));
+//                preloadImage(friends[index]);
+//                return nextFriend;
+//            })
+            .then(getRand)
+            .then(function(rand) {
+                sendChains.tick.resolve(rand);
+                return rand;
+            })
+        )
         .then(initBalloon)
         .map(function(balloon){
             balloon.addEventListener("mousedown", balloonClickedStream.resolve);
@@ -484,6 +495,13 @@ this.SpriteChain = function() {
             if (child instanceof createjs.Container && child.hitTest(pos.x, pos.y)) {
                 return popBalloonStream.resolve(child);
             }
+        }
+
+    });
+
+    var tickChain = listenChains.tick.then(function(rand) {
+        if (!isHost) {
+            tickBalloonStream.resolve(rand);
         }
 
     });
