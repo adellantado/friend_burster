@@ -11,7 +11,6 @@ var assets_path = "assets/";
 var iconPath = "assets/icon/";
 var animationPath ="assets/animation/pop/";
 var musicPath = "assets/music/";
-var ballonPath = "assets/balloon/";
 
 (function(){
     var eventDisp = new EventDispatcher();

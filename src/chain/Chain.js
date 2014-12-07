@@ -158,6 +158,21 @@ this.Chain = function(func) {
 
     }
 
+    this.if = function(cf, func) {
+
+        resolveFunc = function(data) {
+
+            if (cf(data)) {
+                return func(data);
+            }
+
+            return data;
+
+        }
+
+        return next = new Chain();
+    }
+
 
     // Additional Functions
     this.compose2 = function(twoargs_func, arg2) {
@@ -170,6 +185,24 @@ this.Chain = function(func) {
         }
 
         return next = new Chain();
+
+    }
+
+    this.empty = function() {
+
+        var chain = new Chain();
+
+        var emptyFunction = function(data) {
+            return data;
+        }
+
+        resolveFunc = function(data) {
+
+            chain.resolve(data);
+
+        }
+
+        return next = chain.filter(emptyFunction);
 
     }
 

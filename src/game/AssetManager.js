@@ -5,6 +5,7 @@
 function AssetManager() {
 
     var subpath = "cool/";
+    var ballonPath = "assets/balloon/";
 
     var balloonSave = ballonPath+subpath;
 

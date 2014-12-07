@@ -8,6 +8,7 @@ var nextFriend;
 var sound;
 var bonus;
 var balloonManager;
+var balloonQueue;
 
 var gameTrigger;
 
@@ -168,9 +169,48 @@ function failGame() {
     sound.playGameOver();
 }
 
+
+
 function getRand() {
-    return Math.random();
+    return Math.random().toFixed(10);
 }
+
+
+this.BalloonQueue = function() {
+
+    var self = this;
+
+    var balloons = {};
+
+    this.getBalloonId = function(balloon) {
+        var id;
+
+        for (var prop in balloons) {
+            if (balloon === balloons[prop]) {
+                return id = prop;
+            }
+        }
+
+        return id;
+    }
+
+    this.getBalloonById = function(id) {
+        return balloons[id];
+    }
+
+    this.removeBalloon = function(balloon) {
+        var id = self.getBalloonId(balloon);
+        delete balloons[id];
+        return balloon;
+    }
+
+    this.addBalloon = function(balloon, id) {
+        balloons[id] = balloon;
+        return balloon;
+    }
+
+}
+balloonQueue = new BalloonQueue();
 
 this.GameTrigger = function() {
 
@@ -391,19 +431,24 @@ this.SpriteChain = function() {
         ( popBalloonStream =
 
             balloonClickedStream
-        .map(function(event){
-            return event.target.parent;
-        })
-            )
+            .map(function(event){
+                return event.target.parent;
+            })
+            .then(function(balloon){
+                sendChains.pop.resolve(balloonQueue.getBalloonId(balloon));
+                return balloon;
+            })
+        )
         .then(stopBalloon)
         .then(popBalloon)
         .then(function(balloon){
-            bonus.addBurst(balloon);
+            //bonus.addBurst(balloon);
             eventBus.dispatchPopBalloon();
             return balloon;
         })
         .then(new SpriteChain().popAnim)
         .then(removeTweenedItem)
+        .then(balloonQueue.removeBalloon)
 //        .map(function(balloon){
 //            var vo = balloon.vo;
 //            if (vo.type == BalloonFactory.FRIEND_BALLOON) {
@@ -426,7 +471,9 @@ this.SpriteChain = function() {
                 return rand;
             })
         )
-        .then(initBalloon)
+        .then(function(rand){
+            return balloonQueue.addBalloon(initBalloon(rand), rand);
+        })
         .map(function(balloon){
             balloon.addEventListener("mousedown", balloonClickedStream.resolve);
             return balloon;
@@ -439,6 +486,7 @@ this.SpriteChain = function() {
         .map(function (tween) {
             return tween.target;
         })
+        .then(balloonQueue.removeBalloon)
         .map(function (balloon) {
             var lifepoints = balloon.vo.lifepoints;
             MissedBalloons.addMissedBallon(lifepoints);
@@ -465,7 +513,9 @@ this.SpriteChain = function() {
     var eventBusStream = eventBus.activate().execute();
 
     // socket's streams
-    var dataExchanger = new SocketDataExchanger();
+    var dataExchanger = new SocketDataExchanger(function(host){
+        isHost = host;
+    });
     var listenChains = dataExchanger.getListenChain();
     var sendChains = dataExchanger.getSendChain(stage);
 
@@ -486,14 +536,18 @@ this.SpriteChain = function() {
         });
 
     var clickChain = listenChains.click.then(function(pos){
-        //imitateClick(pos.x, pos.y);
 
         var children = stage.children;
 
-        for (var i = 0; i < children.length; i++) {
+        for (var i = children.length-1; i >= 0; i--) {
             var child = children[i];
-            if (child instanceof createjs.Container && child.hitTest(pos.x, pos.y)) {
-                return popBalloonStream.resolve(child);
+            if (child instanceof createjs.Container) {
+                var ch = child.getChildAt(0);
+                if (ch && ch.hitTest(pos.x, pos.y)) {
+                    return popBalloonStream.resolve(child);
+
+                }
+
             }
         }
 
@@ -506,17 +560,11 @@ this.SpriteChain = function() {
 
     });
 
-
-function imitateClick(clientx, clienty) {
-    var theEvent = document.createEvent("MouseEvent");
-    theEvent.initMouseEvent("mousedown", true, true, window, 0, 0, 0, clientx, clienty, false, false, false, false, 0, null);
-//MouseEvent.prototype.initMouseEvent = function(typeArg,canBubbleArg,cancelableArg,viewArg,detailArg,screenXArg,screenYArg,clientXArg,clientYArg,ctrlKeyArg,altKeyArg,shiftKeyArg,metaKeyArg,buttonArg,relatedTargetArg
-//    var element = document.getElementById('canvas');
-//    element.dispatchEvent(theEvent);
-    var p = createjs.Stage.prototype;
-    p._handleMouseDown(theEvent);
-
-}
-
+    var popChain = listenChains.pop
+        .map(balloonQueue.getBalloonById)
+        .empty()
+        .then(function(balloon){
+            popBalloonStream.resolve(balloon);
+        });
 
 /////

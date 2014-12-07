@@ -40,7 +40,7 @@ function BonusCounter() {
     this.addBurst = function(balloon) {
         burstsCount++;
 
-        var friendUid = balloon.vo.friend.uid;
+        //var friendUid = balloon.vo.friend.uid;
         totalPoints += balloon.vo.points;
 
         if (!friendBalloonMap[friendUid]) {
@@ -49,11 +49,11 @@ function BonusCounter() {
 
         friendBalloonMap[friendUid]++;
 
-        if (console.table) {
-            console.table(friendBalloonMap);
-        } else {
-            console.log("bursted: ", burstsCount);
-        }
+//        if (console.table) {
+//            console.table(friendBalloonMap);
+//        } else {
+//            console.log("bursted: ", burstsCount);
+//        }
 
     }
 
