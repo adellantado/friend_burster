@@ -7,6 +7,9 @@ var volumeButton;
 var counter;
 var friends; // medium and big photos, nickname, first-last names, id
 
+var canvas = document.getElementById('canvas');
+var stage = new createjs.Stage(canvas);
+
 var assets_path = "assets/";
 var iconPath = "assets/icon/";
 var animationPath ="assets/animation/pop/";
