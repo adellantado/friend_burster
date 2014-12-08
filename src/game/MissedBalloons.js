@@ -3,6 +3,9 @@
  */
 
 MissedBalloons = (function(){
+
+    const MAX_COUNT_BALLOONS = 5;
+
     var eventDis = new EventDispatcher();
     var missedBalloon = 0;
     var missedBalloonView;
@@ -16,7 +19,7 @@ MissedBalloons = (function(){
     }*/
 
     function updateView(){
-        var balloons = AppConst.MAX_COUNT_BALOONS - missedBalloon;
+        var balloons = MAX_COUNT_BALLOONS - missedBalloon;
         if(balloons === 0) {
             eventDis.dispatchEvent(new GameEvent(GameEventType.MISSED_BALLOON));
         }
@@ -49,7 +52,7 @@ MissedBalloons = (function(){
         missedBalloonView = new createjs.Container();
         missedBalloonView.x = 470;
         missedBalloonView.height = 41;
-        createBalloons( AppConst.MAX_COUNT_BALOONS );
+        createBalloons( MAX_COUNT_BALLOONS );
     }
 
     init();

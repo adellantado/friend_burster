@@ -6,7 +6,7 @@ MenuUI = (function(){
 
     function showMessage(event){
         if(event instanceof GameEvent){
-            PopupManager.showAlert(AppConst.GAME_OVER, AppConst.GAME_OVER_TITLE);
+            PopupManager.showAlert("GAME OVER", "INFO");
         }
     }
     eventDis.addEventListener(GameEventType.MISSED_BALLOON, showMessage);
